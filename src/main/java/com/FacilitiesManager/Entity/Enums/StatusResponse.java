@@ -6,5 +6,6 @@ public enum StatusResponse {
     failed,
     unauthorized,
     not_found,
-    not_available
+    not_available,
+    authorized,
 }

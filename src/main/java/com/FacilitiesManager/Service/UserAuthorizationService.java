@@ -21,6 +21,19 @@ public class UserAuthorizationService {
     private UserRepository userRepo;
 
 
+    public ApiResponseModel<UserLoginModel> registerUser(User userRequest)
+    {
+        Optional<User> opt=userRepo.findById(userRequest.getEmailId());
+        if(opt.isPresent())
+        {
+            return  new ApiResponseModel<>(StatusResponse.failed,null,"User already exists");
+        }else {
+           userRepo.save(userRequest);
+            return  new ApiResponseModel<>(StatusResponse.success,null,"User added");
+        }
+    }
+
+
     public ApiResponseModel<UserLoginModel> validateUserLogin(String userId,String password)
     {
         Optional<User> opt=userRepo.findById(userId);
@@ -41,9 +54,9 @@ public class UserAuthorizationService {
     }
 
 
-    public boolean validateUserToken(User userModel,String token)
+    public boolean validateUserToken(String userId,String token)
     {
-        Optional<User> opt=userRepo.findById(userModel.getEmailId());
+        Optional<User> opt=userRepo.findById(userId);
         if(opt.isPresent())
         {
             User user=opt.get();

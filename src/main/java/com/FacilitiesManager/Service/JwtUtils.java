@@ -7,10 +7,12 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 
+@Service
 public class JwtUtils {
     private  final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private  final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour

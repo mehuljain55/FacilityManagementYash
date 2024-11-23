@@ -1,11 +1,13 @@
 package com.FacilitiesManager.Entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="cabin")
 public class Cabin {
+    @Id
     private int cabinId;
     private String cabinName;
     private int capacity;

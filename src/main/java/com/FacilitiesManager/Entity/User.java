@@ -1,9 +1,7 @@
 package com.FacilitiesManager.Entity;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="user")
@@ -11,6 +9,7 @@ public class User {
 
     @Id
    private String emailId;
+    @Enumerated(EnumType.STRING)
    private AccessRole role;
    private String name;
    private String password;
@@ -21,6 +20,9 @@ public class User {
         this.emailId = emailId;
         this.role = role;
         this.name = name;
+    }
+
+    public User() {
     }
 
     public String getEmailId() {
@@ -53,5 +55,15 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "emailId='" + emailId + '\'' +
+                ", role=" + role +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
