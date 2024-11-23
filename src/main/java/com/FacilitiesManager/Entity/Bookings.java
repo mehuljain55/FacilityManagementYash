@@ -1,9 +1,8 @@
 package com.FacilitiesManager.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.time.LocalTime;
 import java.util.Date;
 
 
@@ -12,24 +11,29 @@ import java.util.Date;
 public class Bookings {
     @Id
     private  int bookingId;
-    private String cabinId;
+    private int cabinId;
     private String userId;
     private String officeId;
     private String purpose;
+    @Temporal(TemporalType.DATE)
     private Date startDate;
+    @Temporal(TemporalType.DATE)
     private Date endDate;
+    private LocalTime validFrom;
+    private LocalTime validTill;
 
 
-    public Bookings(int bookingId, String cabinId, String userId, String purpose, Date startDate, Date endDate) {
+    public Bookings(int bookingId, int cabinId, String userId, String officeId, String purpose, Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill) {
         this.bookingId = bookingId;
         this.cabinId = cabinId;
         this.userId = userId;
+        this.officeId = officeId;
         this.purpose = purpose;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.validFrom = validFrom;
+        this.validTill = validTill;
     }
-
-
 
     public Bookings() {
     }
@@ -42,11 +46,11 @@ public class Bookings {
         this.bookingId = bookingId;
     }
 
-    public String getCabinId() {
+    public int getCabinId() {
         return cabinId;
     }
 
-    public void setCabinId(String cabinId) {
+    public void setCabinId(int cabinId) {
         this.cabinId = cabinId;
     }
 
@@ -88,5 +92,21 @@ public class Bookings {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public LocalTime getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(LocalTime validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public LocalTime getValidTill() {
+        return validTill;
+    }
+
+    public void setValidTill(LocalTime validTill) {
+        this.validTill = validTill;
     }
 }

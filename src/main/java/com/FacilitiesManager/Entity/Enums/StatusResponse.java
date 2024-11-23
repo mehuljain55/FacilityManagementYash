@@ -4,4 +4,7 @@ public enum StatusResponse {
 
     success,
     failed,
+    unauthorized,
+    not_found,
+    not_available
 }
