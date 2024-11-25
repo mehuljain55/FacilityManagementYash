@@ -8,10 +8,7 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.BookingService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/booking")
@@ -25,6 +22,7 @@ public class BookingController {
 
     private final AccessRole accessRole=AccessRole.manager;
 
+    @PostMapping("/approveBooking")
     public ApiResponseModel createBooking(@RequestBody ApiRequestModelBooking booking)
     {
         boolean validateAccess=userAuthorizationService.validateUserAccess(booking.getUser(),booking.getToken(),accessRole);
@@ -36,4 +34,5 @@ public class BookingController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
 }

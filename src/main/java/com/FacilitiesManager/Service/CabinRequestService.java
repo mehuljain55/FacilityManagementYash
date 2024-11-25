@@ -1,18 +1,26 @@
 package com.FacilitiesManager.Service;
 
 import com.FacilitiesManager.Entity.Bookings;
+import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.Enums.BookingStatus;
+import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.BookingRepository;
 import com.FacilitiesManager.Repository.CabinRepository;
 import com.FacilitiesManager.Repository.CabinRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class CabinRequestService {
 
     @Autowired
@@ -24,11 +32,14 @@ public class CabinRequestService {
     @Autowired
     private CabinRequestRepository cabinRequestRepository;
 
+    @Autowired
+    private  BookingService bookingService;
+
 
     public ApiResponseModel checkCabinAvailabilitySingleDay(CabinRequest cabinRequest) {
 
         try {
-            List<Bookings> bookings = bookingRepository.findBookingsSingleDayBetweenTimes(cabinRequest.getCabinId(), cabinRequest.getValidFrom(), cabinRequest.getValidTill(), cabinRequest.getStartDate());
+            List<Bookings> bookings = bookingRepository.findBookingsByCabinIdSingleDayBetweenTimes(cabinRequest.getCabinId(), cabinRequest.getValidFrom(), cabinRequest.getValidTill(), cabinRequest.getStartDate());
             boolean isAvailable = bookings == null || bookings.isEmpty();
             StatusResponse status = isAvailable ? StatusResponse.available : StatusResponse.not_available;
             String message = isAvailable ? "Cabin available" : "Cabin not available";
@@ -53,6 +64,70 @@ public class CabinRequestService {
             e.printStackTrace();
             return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to process request try again later");
         }
+    }
+
+    public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest)
+    {
+        boolean isCabinAvailable;
+        if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
+        {
+            isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
+            cabinRequest.setEndDate(cabinRequest.getStartDate());
+
+        }else{
+            isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
+            cabinRequest.setValidFrom(LocalTime.of(0,0));
+            cabinRequest.setValidTill(LocalTime.of(0,0));
+        }
+
+        if(isCabinAvailable)
+        {
+            cabinRequest.setStatus(BookingStatus.hold);
+            cabinRequestRepository.save(cabinRequest);
+            return new ApiResponseModel<>(StatusResponse.success,null,"Cabin Request");
+        }else {
+            return new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin not available");
+        }
+    }
+
+    public ApiResponseModel<List<Cabin>> getAvailableCabin(CabinAvaliableModel cabinAvaliableModel)
+    {
+        List<Cabin> cabins=cabinRepository.findCabinByOfficeId(cabinAvaliableModel.getOfficeId());
+        List<Bookings> bookings;
+
+        if(cabins==null)
+        {
+            return new ApiResponseModel<>(StatusResponse.not_found,null,"No Cabin found");
+        }
+
+        if(cabinAvaliableModel.getBookingValadity().equals(BookingValadity.single_day))
+        {
+            bookings=bookingRepository.findBookingsBySingleDayBetweenTimes(cabinAvaliableModel.getOfficeId(),
+                    cabinAvaliableModel.getValidFrom(),
+                    cabinAvaliableModel.getValidTill(),
+                    cabinAvaliableModel.getStartDate());
+            System.out.println("Cabin Model:"+cabinAvaliableModel);
+            System.out.println("Booking Size:"+ bookings.size());
+        }else {
+            bookings=bookingRepository.findBookingsMultipleDaysBetweenDates(cabinAvaliableModel.getStartDate(),
+                    cabinAvaliableModel.getEndDate(),
+                    cabinAvaliableModel.getOfficeId());
+        }
+        if(bookings!=null)
+        {
+            for(Cabin cabin:cabins)
+            {
+                for(Bookings booking:bookings)
+                {
+                    if(cabin.getCabinId()==booking.getCabinId())
+                    {
+                        cabins.remove(cabin);
+                    }
+                }
+            }
+            return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
+        }
+        return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
     }
 
 

@@ -78,7 +78,7 @@ public class BookingService {
      }
 
     public boolean checkCabinAvabalitySingleDay(CabinRequest cabinRequest) {
-        List<Bookings> bookings = bookingRepository.findBookingsSingleDayBetweenTimes(
+        List<Bookings> bookings = bookingRepository.findBookingsByCabinIdSingleDayBetweenTimes(
                 cabinRequest.getCabinId(),
                 cabinRequest.getValidFrom(),
                 cabinRequest.getValidTill(),

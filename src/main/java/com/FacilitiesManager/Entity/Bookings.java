@@ -109,4 +109,19 @@ public class Bookings {
     public void setValidTill(LocalTime validTill) {
         this.validTill = validTill;
     }
+
+    @Override
+    public String toString() {
+        return "Bookings{" +
+                "bookingId=" + bookingId +
+                ", cabinId=" + cabinId +
+                ", userId='" + userId + '\'' +
+                ", officeId='" + officeId + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", validFrom=" + validFrom +
+                ", validTill=" + validTill +
+                '}';
+    }
 }

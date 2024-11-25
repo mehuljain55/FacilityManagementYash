@@ -58,7 +58,7 @@ public class UserController {
         return apiResponseModel;
     }
 
-    @GetMapping("/checkAvabality")
+    @GetMapping("/checkAvailability")
     public  ApiResponseModel checkCabinRequestAvabality(@RequestBody ApiRequestModelBooking bookingModel)
     {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
@@ -77,4 +77,24 @@ public class UserController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+    @PostMapping("/createBooking")
+    public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
+        ApiResponseModel apiResponseModel;
+        if(validateAccess)
+        {
+            apiResponseModel=cabinRequestService.createCabinBookingRequest(bookingModel.getCabinRequestModel());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+
+
+
+
+
 }

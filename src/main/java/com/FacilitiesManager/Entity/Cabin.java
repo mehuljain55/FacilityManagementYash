@@ -13,12 +13,7 @@ public class Cabin {
     private int capacity;
     private String officeId;
 
-    public Cabin(int cabinId, String cabinName, int capacity, String officeId) {
-        this.cabinId = cabinId;
-        this.cabinName = cabinName;
-        this.capacity = capacity;
-        this.officeId = officeId;
-    }
+
 
     public Cabin() {
     }
@@ -54,4 +49,5 @@ public class Cabin {
     public void setOfficeId(String officeId) {
         this.officeId = officeId;
     }
+
 }
