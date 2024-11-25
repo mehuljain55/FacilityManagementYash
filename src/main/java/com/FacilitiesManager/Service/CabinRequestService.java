@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Service;
 
+import com.FacilitiesManager.Entity.BookingModel;
 import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.CabinRequest;
@@ -8,6 +9,7 @@ import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
+import com.FacilitiesManager.Repository.BookingModelRepository;
 import com.FacilitiesManager.Repository.BookingRepository;
 import com.FacilitiesManager.Repository.CabinRepository;
 import com.FacilitiesManager.Repository.CabinRequestRepository;
@@ -35,11 +37,15 @@ public class CabinRequestService {
     @Autowired
     private  BookingService bookingService;
 
+    @Autowired
+    private BookingModelRepository bookingModelRepository;
+
+
 
     public ApiResponseModel checkCabinAvailabilitySingleDay(CabinRequest cabinRequest) {
 
         try {
-            List<Bookings> bookings = bookingRepository.findBookingsByCabinIdSingleDayBetweenTimes(cabinRequest.getCabinId(), cabinRequest.getValidFrom(), cabinRequest.getValidTill(), cabinRequest.getStartDate());
+            List<BookingModel> bookings = bookingModelRepository.findBookingsByCabinIdSingleDayBetweenTimes(cabinRequest.getCabinId(),cabinRequest.getValidFrom(),cabinRequest.getValidTill(),cabinRequest.getStartDate());
             boolean isAvailable = bookings == null || bookings.isEmpty();
             StatusResponse status = isAvailable ? StatusResponse.available : StatusResponse.not_available;
             String message = isAvailable ? "Cabin available" : "Cabin not available";
@@ -93,7 +99,7 @@ public class CabinRequestService {
     public ApiResponseModel<List<Cabin>> getAvailableCabin(CabinAvaliableModel cabinAvaliableModel)
     {
         List<Cabin> cabins=cabinRepository.findCabinByOfficeId(cabinAvaliableModel.getOfficeId());
-        List<Bookings> bookings;
+        List<BookingModel> bookings;
 
         if(cabins==null)
         {
@@ -102,14 +108,14 @@ public class CabinRequestService {
 
         if(cabinAvaliableModel.getBookingValadity().equals(BookingValadity.single_day))
         {
-            bookings=bookingRepository.findBookingsBySingleDayBetweenTimes(cabinAvaliableModel.getOfficeId(),
+            bookings=bookingModelRepository.findBookingsByOfficeIdBetweenTimes(cabinAvaliableModel.getOfficeId(),
                     cabinAvaliableModel.getValidFrom(),
                     cabinAvaliableModel.getValidTill(),
                     cabinAvaliableModel.getStartDate());
             System.out.println("Cabin Model:"+cabinAvaliableModel);
             System.out.println("Booking Size:"+ bookings.size());
         }else {
-            bookings=bookingRepository.findBookingsMultipleDaysBetweenDates(cabinAvaliableModel.getStartDate(),
+            bookings=bookingModelRepository.findBookingsMultipleDaysBetweenDates(cabinAvaliableModel.getStartDate(),
                     cabinAvaliableModel.getEndDate(),
                     cabinAvaliableModel.getOfficeId());
         }
@@ -117,7 +123,7 @@ public class CabinRequestService {
         {
             for(Cabin cabin:cabins)
             {
-                for(Bookings booking:bookings)
+                for(BookingModel booking:bookings)
                 {
                     if(cabin.getCabinId()==booking.getCabinId())
                     {

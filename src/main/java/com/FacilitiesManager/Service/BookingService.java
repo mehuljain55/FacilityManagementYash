@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Service;
 
+import com.FacilitiesManager.Entity.BookingModel;
 import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.CabinRequest;
@@ -7,6 +8,7 @@ import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Repository.BookingModelRepository;
 import com.FacilitiesManager.Repository.BookingRepository;
 import com.FacilitiesManager.Repository.CabinRepository;
 import com.FacilitiesManager.Repository.CabinRequestRepository;
@@ -29,6 +31,9 @@ public class BookingService {
 
     @Autowired
     private CabinRequestRepository cabinRequestRepository;
+
+    @Autowired
+    private BookingModelRepository bookingModelRepository;
 
 
      public ApiResponseModel createBooking(CabinRequest cabinRequest)
@@ -78,7 +83,7 @@ public class BookingService {
      }
 
     public boolean checkCabinAvabalitySingleDay(CabinRequest cabinRequest) {
-        List<Bookings> bookings = bookingRepository.findBookingsByCabinIdSingleDayBetweenTimes(
+        List<BookingModel> bookings = bookingModelRepository.findBookingsByCabinIdSingleDayBetweenTimes(
                 cabinRequest.getCabinId(),
                 cabinRequest.getValidFrom(),
                 cabinRequest.getValidTill(),
@@ -88,7 +93,7 @@ public class BookingService {
     }
 
     public boolean checkCabinAvailabilityMultipleDay(CabinRequest cabinRequest) {
-        List<Bookings> bookings = bookingRepository.findBookingsBetweenDates(cabinRequest.getStartDate(),
+        List<BookingModel> bookings = bookingModelRepository.findBookingByCabinIdDate(cabinRequest.getStartDate(),
                                                                              cabinRequest.getEndDate(),
                                                                              cabinRequest.getCabinId());
 
