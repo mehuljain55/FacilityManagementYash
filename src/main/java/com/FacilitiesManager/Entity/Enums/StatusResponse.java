@@ -8,4 +8,5 @@ public enum StatusResponse {
     not_found,
     not_available,
     authorized,
+    available,
 }
