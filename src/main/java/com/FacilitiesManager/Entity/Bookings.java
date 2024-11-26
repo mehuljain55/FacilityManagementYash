@@ -22,7 +22,6 @@ public class Bookings {
     private Date endDate;
     private LocalTime validFrom;
     private LocalTime validTill;
-    private List<BookingModel> bookingModel;
 
 
     public Bookings(int bookingId, int cabinId, String userId, String officeId, String purpose, Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill) {

@@ -7,10 +7,7 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,7 +22,7 @@ public class CabinController {
     private UserAuthorizationService userAuthorizationService;
 
 
-    @GetMapping("/findAvailableCabins")
+    @PostMapping ("/findAvailableCabins")
     public ApiResponseModel<List<Cabin>> getAvailableCabin(@RequestBody ApiRequestModelCabin cabinModel)
     {
         boolean validateAccess=userAuthorizationService.validateUserToken(cabinModel.getUser().getEmailId(),cabinModel.getToken());

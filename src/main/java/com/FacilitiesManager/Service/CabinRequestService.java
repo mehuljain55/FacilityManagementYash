@@ -60,7 +60,7 @@ public class CabinRequestService {
     public ApiResponseModel checkCabinAvailabilityMultipleDay(CabinRequest cabinRequest) {
 
         try {
-            List<Bookings> bookings = bookingRepository.findBookingsBetweenDates(cabinRequest.getStartDate(),cabinRequest.getEndDate(),cabinRequest.getCabinId());
+            List<BookingModel> bookings = bookingModelRepository.findBookingByCabinIdDate(cabinRequest.getStartDate(),cabinRequest.getEndDate(),cabinRequest.getCabinId());
             boolean isAvailable = bookings == null || bookings.isEmpty();
             StatusResponse status = isAvailable ? StatusResponse.available : StatusResponse.not_available;
             String message = isAvailable ? "Cabin available" : "Cabin not available";
