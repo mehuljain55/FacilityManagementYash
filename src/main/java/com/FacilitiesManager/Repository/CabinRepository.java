@@ -14,4 +14,6 @@ public interface CabinRepository extends JpaRepository<Cabin,Integer> {
     @Query("select c from Cabin c where c.officeId=:officeId")
     public List<Cabin> findCabinByOfficeId(@Param("officeId") String officeId);
 
+
+
 }

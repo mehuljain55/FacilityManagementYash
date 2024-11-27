@@ -136,6 +136,18 @@ public class CabinRequestService {
         return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
     }
 
+    public ApiResponseModel getAllCabinRequest(String officeId)
+    {
+        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold,officeId);
+        if(cabinRequests!=null)
+        {
+            return new ApiResponseModel<>(StatusResponse.success,cabinRequests,"Cabin Request List");
+        }
+        else {
+         return new ApiResponseModel<>(StatusResponse.not_found, null, "No request on hold");
+        }
+    }
+
 
 
 

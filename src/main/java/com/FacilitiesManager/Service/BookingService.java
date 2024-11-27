@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class BookingService {
@@ -43,6 +41,7 @@ public class BookingService {
              if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
              {
                  avabality_status=checkCabinAvabalitySingleDay(cabinRequest);
+                 cabinRequest.setEndDate(cabinRequest.getStartDate());
              }
              else{
                  avabality_status=checkCabinAvailabilityMultipleDay(cabinRequest);
@@ -64,15 +63,31 @@ public class BookingService {
                      bookings.setValidFrom(cabinRequest.getValidFrom());
                      bookings.setValidTill(cabinRequest.getValidTill());
                      cabinRequest.setStatus(BookingStatus.approved);
-                     bookingRepository.save(bookings);
+                     Bookings bookingRequest= bookingRepository.save(bookings);
+                     List<Date> dates=getDatesBetween(cabinRequest.getStartDate(),cabinRequest.getEndDate());
+
+                     for(Date date:dates)
+                     {
+                         BookingModel bookingModel=new BookingModel();
+                         bookingModel.setBookingId(bookingRequest.getBookingId());
+                         bookingModel.setDate(date);
+                         bookingModel.setCabinId(bookingModel.getCabinId());
+                         bookingModel.setPurpose(cabinRequest.getPurpose());
+                         bookingModel.setUserId(cabinRequest.getUserId());
+                         bookingModel.setOfficeId(cabin.getOfficeId());
+                         bookingModel.setValidFrom(cabinRequest.getValidFrom());
+                         bookingModel.setValidTill(cabinRequest.getValidTill());
+                         bookingModelRepository.save(bookingModel);
+                     }
+
                      cabinRequestRepository.save(cabinRequest);
-                     return  new ApiResponseModel<>(StatusResponse.success,null,"Booking succssfully created");
+                     return  new ApiResponseModel<>(StatusResponse.success,null,"Booking successfully created");
                  }else {
                      return  new ApiResponseModel<>(StatusResponse.not_found,null,"Cabin not found");
                  }
 
              }else {
-                 return  new ApiResponseModel<>(StatusResponse.not_available,null,"Cablin already booked");
+                 return  new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin already booked");
              }
 
          }catch (Exception e)
@@ -81,6 +96,8 @@ public class BookingService {
              return  new ApiResponseModel<>(StatusResponse.failed,null,"Please contact administrator");
          }
      }
+
+
 
     public boolean checkCabinAvabalitySingleDay(CabinRequest cabinRequest) {
         List<BookingModel> bookings = bookingModelRepository.findBookingsByCabinIdSingleDayBetweenTimes(
@@ -100,14 +117,19 @@ public class BookingService {
         return bookings == null || bookings.isEmpty();
     }
 
-    public ApiResponseModel viewBookingByDateandOffice(Date date, String officeId)
-     {
-         List<Bookings> bookings=bookingRepository.getBookingByDateandOffice(officeId,date);
-         if(bookings!=null&& bookings.size()>0)
-         {
-           return new ApiResponseModel<>(StatusResponse.success,bookings,"Booking found");
-         }else{
-           return new ApiResponseModel<>(StatusResponse.success,null,"No Booking found");
-         }
-     }
+
+
+    public static List<Date> getDatesBetween(Date startDate, Date endDate)  {
+        List<Date> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        while (!calendar.getTime().after(endDate)) {
+            dates.add(calendar.getTime());
+            calendar.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
+
+
 }

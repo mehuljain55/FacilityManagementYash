@@ -3,12 +3,12 @@ package com.FacilitiesManager.Entity.Model;
 import com.FacilitiesManager.Entity.CabinRequest;
 import com.FacilitiesManager.Entity.User;
 
-import java.util.List;
 
 public class ApiRequestModelBooking {
     private String token;
     private CabinRequest cabinRequestModel;
     private User user;
+    private String officeId;
 
     public ApiRequestModelBooking() {
     }
@@ -41,5 +41,13 @@ public class ApiRequestModelBooking {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getOfficeId() {
+        return officeId;
+    }
+
+    public void setOfficeId(String officeId) {
+        this.officeId = officeId;
     }
 }

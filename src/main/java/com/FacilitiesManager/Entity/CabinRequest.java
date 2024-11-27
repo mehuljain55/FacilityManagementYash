@@ -16,7 +16,10 @@ public class CabinRequest {
     private int cabinId;
     private String userId;
     private String purpose;
+    private  String officeId;
+    @Temporal(TemporalType.DATE)
     private Date startDate;
+    @Temporal(TemporalType.DATE)
     private Date endDate;
     private LocalTime validFrom;
     private LocalTime validTill;
@@ -122,4 +125,11 @@ public class CabinRequest {
         this.status = status;
     }
 
+    public String getOfficeId() {
+        return officeId;
+    }
+
+    public void setOfficeId(String officeId) {
+        this.officeId = officeId;
+    }
 }

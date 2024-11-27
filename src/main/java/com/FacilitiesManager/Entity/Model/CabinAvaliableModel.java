@@ -1,7 +1,6 @@
 package com.FacilitiesManager.Entity.Model;
 
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
-import com.FacilitiesManager.Entity.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 

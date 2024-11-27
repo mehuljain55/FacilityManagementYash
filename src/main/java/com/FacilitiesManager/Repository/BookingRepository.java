@@ -11,8 +11,4 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Bookings,Integer> {
 
-      @Query("select b from Bookings b where b.officeId=:officeId and b.startDate<=:date and b.endDate>=:date")
-      public List<Bookings> getBookingByDateandOffice(String officeId, Date date);
-      
-
 }
