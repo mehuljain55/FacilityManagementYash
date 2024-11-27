@@ -15,5 +15,7 @@ public interface CabinRequestRepository extends JpaRepository<CabinRequest,Integ
     @Query("select c from CabinRequest c where c.status=:status and c.officeId=:officeId")
     List<CabinRequest> findCabinRequestByOfficeId(@Param("status") BookingStatus status,@Param("officeId") String officeId);
 
+    @Query("select c from CabinRequest c where  c.userId=:userId")
+    List<CabinRequest> findCabinRequestByUserId(@Param("userId") String userId);
 
 }

@@ -9,6 +9,7 @@ import java.util.Date;
 @Table(name="booking_model")
 public class BookingModel {
         @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
         private int sno;
         private int bookingId;
         private int cabinId;
@@ -106,4 +107,6 @@ public class BookingModel {
     public void setValidTill(LocalTime validTill) {
         this.validTill = validTill;
     }
+
+
 }

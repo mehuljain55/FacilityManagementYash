@@ -2,8 +2,10 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.Enums.AccessRole;
+import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
+import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.BookingService;
 import com.FacilitiesManager.Service.CabinRequestService;
@@ -39,17 +41,19 @@ public class BookingController {
         }
     }
 
-    @GetMapping("/viewRequest")
-    public  ApiResponseModel viewBookingRequest(@RequestBody ApiRequestModelBooking bookingRequest)
+    @PostMapping("/viewRequest")
+    public  ApiResponseModel viewBookingRequest(@RequestBody ApiRequestViewModel bookingRequest)
     {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
         if(validateAccess)
         {
-            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getOfficeId());
+            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getUser());
             return apiResponseModel;
         }else {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+
 
 }

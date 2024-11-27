@@ -71,7 +71,7 @@ public class BookingService {
                          BookingModel bookingModel=new BookingModel();
                          bookingModel.setBookingId(bookingRequest.getBookingId());
                          bookingModel.setDate(date);
-                         bookingModel.setCabinId(bookingModel.getCabinId());
+                         bookingModel.setCabinId(bookingRequest.getCabinId());
                          bookingModel.setPurpose(cabinRequest.getPurpose());
                          bookingModel.setUserId(cabinRequest.getUserId());
                          bookingModel.setOfficeId(cabin.getOfficeId());

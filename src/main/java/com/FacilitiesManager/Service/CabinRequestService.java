@@ -1,11 +1,9 @@
 package com.FacilitiesManager.Service;
 
-import com.FacilitiesManager.Entity.BookingModel;
-import com.FacilitiesManager.Entity.Bookings;
-import com.FacilitiesManager.Entity.Cabin;
-import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
+import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
@@ -42,37 +40,8 @@ public class CabinRequestService {
 
 
 
-    public ApiResponseModel checkCabinAvailabilitySingleDay(CabinRequest cabinRequest) {
 
-        try {
-            List<BookingModel> bookings = bookingModelRepository.findBookingsByCabinIdSingleDayBetweenTimes(cabinRequest.getCabinId(),cabinRequest.getValidFrom(),cabinRequest.getValidTill(),cabinRequest.getStartDate());
-            boolean isAvailable = bookings == null || bookings.isEmpty();
-            StatusResponse status = isAvailable ? StatusResponse.available : StatusResponse.not_available;
-            String message = isAvailable ? "Cabin available" : "Cabin not available";
-            return new ApiResponseModel<>(status, null, message);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to process request try again later");
-        }
-    }
-
-    public ApiResponseModel checkCabinAvailabilityMultipleDay(CabinRequest cabinRequest) {
-
-        try {
-            List<BookingModel> bookings = bookingModelRepository.findBookingByCabinIdDate(cabinRequest.getStartDate(),cabinRequest.getEndDate(),cabinRequest.getCabinId());
-            boolean isAvailable = bookings == null || bookings.isEmpty();
-            StatusResponse status = isAvailable ? StatusResponse.available : StatusResponse.not_available;
-            String message = isAvailable ? "Cabin available" : "Cabin not available";
-            return new ApiResponseModel<>(status, null, message);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to process request try again later");
-        }
-    }
-
-    public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest)
+    public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user)
     {
         boolean isCabinAvailable;
         if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
@@ -83,12 +52,13 @@ public class CabinRequestService {
         }else{
             isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
             cabinRequest.setValidFrom(LocalTime.of(0,0));
-            cabinRequest.setValidTill(LocalTime.of(0,0));
+            cabinRequest.setValidTill(LocalTime.of(23,0));
         }
 
         if(isCabinAvailable)
         {
             cabinRequest.setStatus(BookingStatus.hold);
+            cabinRequest.setUserId(user.getEmailId());
             cabinRequestRepository.save(cabinRequest);
             return new ApiResponseModel<>(StatusResponse.success,null,"Cabin Request");
         }else {
@@ -112,8 +82,7 @@ public class CabinRequestService {
                     cabinAvaliableModel.getValidFrom(),
                     cabinAvaliableModel.getValidTill(),
                     cabinAvaliableModel.getStartDate());
-            System.out.println("Cabin Model:"+cabinAvaliableModel);
-            System.out.println("Booking Size:"+ bookings.size());
+
         }else {
             bookings=bookingModelRepository.findBookingsMultipleDaysBetweenDates(cabinAvaliableModel.getStartDate(),
                     cabinAvaliableModel.getEndDate(),
@@ -136,21 +105,47 @@ public class CabinRequestService {
         return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
     }
 
-    public ApiResponseModel getAllCabinRequest(String officeId)
+    public ApiResponseModel getAllCabinRequest(User user)
     {
-        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold,officeId);
+        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold, user.getOfficeId());
+        List<CabinRequest> cabinRequestList=new ArrayList<>();
         if(cabinRequests!=null)
         {
-            return new ApiResponseModel<>(StatusResponse.success,cabinRequests,"Cabin Request List");
+            for(CabinRequest cabinRequest:cabinRequests)
+            {
+                boolean isCabinAvailable;
+                CabinAvaiability cabinAvaiability=CabinAvaiability.Not_Available;
+                if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
+                {
+                    isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
+
+                }else{
+                    isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
+                }
+                if(isCabinAvailable)
+                {
+                    cabinAvaiability=CabinAvaiability.Avaliable;
+                }
+              cabinRequest.setCabinAvaiability(cabinAvaiability);
+                cabinRequestList.add(cabinRequest);
+            }
+            return new ApiResponseModel<>(StatusResponse.success,cabinRequestList,"Cabin Request List");
         }
         else {
          return new ApiResponseModel<>(StatusResponse.not_found, null, "No request on hold");
         }
     }
 
-
-
-
-
+  public ApiResponseModel getCabinRequestByUser(User user)
+  {
+         List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByUserId(user.getEmailId());
+         if(cabinRequests!=null)
+         {
+             return new ApiResponseModel<>(StatusResponse.success,cabinRequests,"Cabin request found");
+         }
+         else {
+             return new ApiResponseModel<>(StatusResponse.not_found,null,"No requests");
+         }
+  }
 
 }

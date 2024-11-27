@@ -5,6 +5,7 @@ import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
+import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
@@ -58,25 +59,7 @@ public class UserController {
         return apiResponseModel;
     }
 
-    @GetMapping("/checkAvailability")
-    public  ApiResponseModel checkCabinRequestAvabality(@RequestBody ApiRequestModelBooking bookingModel)
-    {
-        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
-       ApiResponseModel apiResponseModel;
-        if(validateAccess)
-        {
-          if(bookingModel.getCabinRequestModel().getBookingValadity().equals(BookingValadity.single_day))
-          {
-              apiResponseModel=cabinRequestService.checkCabinAvailabilitySingleDay(bookingModel.getCabinRequestModel());
-              return apiResponseModel;
-          }else {
-              apiResponseModel=cabinRequestService.checkCabinAvailabilityMultipleDay(bookingModel.getCabinRequestModel());
-              return  apiResponseModel;
-          }
-        }else {
-            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
-        }
-    }
+
 
     @PostMapping("/createBooking")
     public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel)
@@ -85,12 +68,26 @@ public class UserController {
         ApiResponseModel apiResponseModel;
         if(validateAccess)
         {
-            apiResponseModel=cabinRequestService.createCabinBookingRequest(bookingModel.getCabinRequestModel());
+            apiResponseModel=cabinRequestService.createCabinBookingRequest(bookingModel.getCabinRequestModel(),bookingModel.getUser());
             return apiResponseModel;
         }else {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+    @PostMapping("/viewRequest")
+  public  ApiResponseModel viewUserBookingRequest(@RequestBody ApiRequestViewModel requestViewModel)
+  {
+      boolean validateAccess=userAuthorizationService.validateUserAccess(requestViewModel.getUser(),requestViewModel.getToken(),accessRole);
+      ApiResponseModel apiResponseModel;
+      if(validateAccess)
+      {
+          apiResponseModel=cabinRequestService.getCabinRequestByUser(requestViewModel.getUser());
+          return apiResponseModel;
+      }else {
+          return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+      }
+  }
 
 
 

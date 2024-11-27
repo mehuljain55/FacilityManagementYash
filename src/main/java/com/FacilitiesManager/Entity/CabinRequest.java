@@ -2,6 +2,7 @@ package com.FacilitiesManager.Entity;
 
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
+import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Table(name="cabin_request")
 public class CabinRequest {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private  int requestId;
     private int cabinId;
     private String userId;
@@ -28,6 +30,8 @@ public class CabinRequest {
     private BookingValadity bookingValadity;
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+    @Enumerated(EnumType.STRING)
+    private CabinAvaiability cabinAvaiability;
 
     public CabinRequest(int requestId, int cabinId, String userId, String purpose, Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill, BookingValadity bookingValadity, BookingStatus status) {
         this.requestId = requestId;
@@ -131,5 +135,13 @@ public class CabinRequest {
 
     public void setOfficeId(String officeId) {
         this.officeId = officeId;
+    }
+
+    public CabinAvaiability getCabinAvaiability() {
+        return cabinAvaiability;
+    }
+
+    public void setCabinAvaiability(CabinAvaiability cabinAvaiability) {
+        this.cabinAvaiability = cabinAvaiability;
     }
 }

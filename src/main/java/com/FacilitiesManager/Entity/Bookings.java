@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name="booking")
 public class Bookings {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private  int bookingId;
     private int cabinId;
     private String userId;

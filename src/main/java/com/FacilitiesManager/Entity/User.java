@@ -13,13 +13,15 @@ public class User {
    private AccessRole role;
    private String name;
    private String password;
+   private String officeId;
 
 
 
-    public User(String emailId, AccessRole role, String name) {
+    public User(String emailId, AccessRole role, String name,String officeId) {
         this.emailId = emailId;
         this.role = role;
         this.name = name;
+        this.officeId=officeId;
     }
 
     public User() {
@@ -57,13 +59,11 @@ public class User {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "emailId='" + emailId + '\'' +
-                ", role=" + role +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public String getOfficeId() {
+        return officeId;
+    }
+
+    public void setOfficeId(String officeId) {
+        this.officeId = officeId;
     }
 }
