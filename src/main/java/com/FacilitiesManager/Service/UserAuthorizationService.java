@@ -2,6 +2,7 @@ package com.FacilitiesManager.Service;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
+import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.UserLoginModel;
 import com.FacilitiesManager.Entity.User;
@@ -29,6 +30,7 @@ public class UserAuthorizationService {
             return  new ApiResponseModel<>(StatusResponse.failed,null,"User already exists");
         }else {
             userRequest.setRole(AccessRole.user);
+            userRequest.setStatus(UserApprovalStatus.PENDING);
            userRepo.save(userRequest);
             return  new ApiResponseModel<>(StatusResponse.success,null,"User added");
         }
@@ -41,7 +43,7 @@ public class UserAuthorizationService {
         if(opt.isPresent())
         {
             User user=opt.get();
-            if(user.getPassword().equals(password))
+            if(user.getPassword().equals(password)&& user.getStatus().equals(UserApprovalStatus.ACTIVE))
             {
                 String token=jwtUtils.generateToken(user);
                 UserLoginModel userLoginModel=new UserLoginModel(user,token);

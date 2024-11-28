@@ -1,19 +1,19 @@
 package com.FacilitiesManager.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="cabin")
 public class Cabin {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int cabinId;
     private String cabinName;
     private int capacity;
     private String officeId;
-
-
+    @Enumerated(EnumType.STRING)
+    private CabinAvaiability status;
 
     public Cabin() {
     }
@@ -50,4 +50,11 @@ public class Cabin {
         this.officeId = officeId;
     }
 
+    public CabinAvaiability getStatus() {
+        return status;
+    }
+
+    public void setStatus(CabinAvaiability status) {
+        this.status = status;
+    }
 }

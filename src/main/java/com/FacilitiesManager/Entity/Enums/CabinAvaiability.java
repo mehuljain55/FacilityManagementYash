@@ -2,5 +2,7 @@ package com.FacilitiesManager.Entity.Enums;
 
 public enum CabinAvaiability {
     Avaliable,
-    Not_Available
+    Not_Available,
+    Booked,
+    Requested,
 }

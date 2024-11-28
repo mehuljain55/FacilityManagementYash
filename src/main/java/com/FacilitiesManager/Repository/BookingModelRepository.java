@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface BookingModelRepository extends JpaRepository<BookingModel,Integer> {
 
-    @Query("SELECT b FROM BookingModel b WHERE (b.validFrom <= :startTime AND b.validTill >= :endTime)  and b.date = :date" +
+    @Query("SELECT b FROM BookingModel b WHERE (b.validFrom < :endTime AND b.validTill > :startTime)  and b.date = :date" +
             " AND b.officeId=:officeId")
     List<BookingModel> findBookingsByOfficeIdBetweenTimes(@Param("officeId") String  officeId,
                                                  @Param("startTime") LocalTime startTime,

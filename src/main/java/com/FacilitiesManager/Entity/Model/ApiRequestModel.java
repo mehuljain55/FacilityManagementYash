@@ -3,18 +3,19 @@ package com.FacilitiesManager.Entity.Model;
 import com.FacilitiesManager.Entity.CabinRequest;
 import com.FacilitiesManager.Entity.User;
 
-public class ApiRequestModelCabin {
+public class ApiRequestModel {
+
     private String token;
     private User user;
-    private CabinAvaliableModel cabinAvaliableModel;
+    private String officeId;
 
-    public ApiRequestModelCabin(String token, User user, CabinAvaliableModel cabinAvaliableModel) {
+    public ApiRequestModel(String token, User user, String officeId) {
         this.token = token;
         this.user = user;
-        this.cabinAvaliableModel = cabinAvaliableModel;
+        this.officeId = officeId;
     }
 
-    public ApiRequestModelCabin() {
+    public ApiRequestModel() {
     }
 
     public String getToken() {
@@ -33,11 +34,11 @@ public class ApiRequestModelCabin {
         this.user = user;
     }
 
-    public CabinAvaliableModel getCabinAvaliableModel() {
-        return cabinAvaliableModel;
+    public String getOfficeId() {
+        return officeId;
     }
 
-    public void setCabinAvaliableModel(CabinAvaliableModel cabinAvaliableModel) {
-        this.cabinAvaliableModel = cabinAvaliableModel;
+    public void setOfficeId(String officeId) {
+        this.officeId = officeId;
     }
 }

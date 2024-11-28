@@ -2,7 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
-import com.FacilitiesManager.Entity.Model.ApiRequestModelCabin;
+import com.FacilitiesManager.Entity.Model.ApiRequestModelCabinRequest;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
@@ -23,7 +23,7 @@ public class CabinController {
 
 
     @PostMapping ("/findAvailableCabins")
-    public ApiResponseModel<List<Cabin>> getAvailableCabin(@RequestBody ApiRequestModelCabin cabinModel)
+    public ApiResponseModel<List<Cabin>> getAvailableCabin(@RequestBody ApiRequestModelCabinRequest cabinModel)
     {
         boolean validateAccess=userAuthorizationService.validateUserToken(cabinModel.getUser().getEmailId(),cabinModel.getToken());
         if(validateAccess)

@@ -7,18 +7,13 @@ import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
-import com.FacilitiesManager.Repository.BookingModelRepository;
-import com.FacilitiesManager.Repository.BookingRepository;
-import com.FacilitiesManager.Repository.CabinRepository;
-import com.FacilitiesManager.Repository.CabinRequestRepository;
+import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CabinRequestService {
@@ -33,10 +28,16 @@ public class CabinRequestService {
     private CabinRequestRepository cabinRequestRepository;
 
     @Autowired
+    private CabinRequestModelRepository cabinRequestModelRepository;
+
+    @Autowired
     private  BookingService bookingService;
 
     @Autowired
     private BookingModelRepository bookingModelRepository;
+
+    @Autowired
+    private UserRepository userRepo;
 
 
 
@@ -44,6 +45,7 @@ public class CabinRequestService {
     public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user)
     {
         boolean isCabinAvailable;
+
         if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
         {
             isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
@@ -57,19 +59,55 @@ public class CabinRequestService {
 
         if(isCabinAvailable)
         {
+            List<Date> dates=getDatesBetween(cabinRequest.getStartDate(),cabinRequest.getEndDate());
+
             cabinRequest.setStatus(BookingStatus.hold);
             cabinRequest.setUserId(user.getEmailId());
-            cabinRequestRepository.save(cabinRequest);
+           CabinRequest cabinRequestUser= cabinRequestRepository.save(cabinRequest);
+           for(Date date:dates)
+           {
+               CabinRequestModel cabinRequestModel=new CabinRequestModel();
+               cabinRequestModel.setCabinRequestId(cabinRequestUser.getRequestId());
+               cabinRequestModel.setCabinId(cabinRequestUser.getCabinId());
+               cabinRequestModel.setDate(date);
+               cabinRequestModel.setValidFrom(cabinRequestUser.getValidFrom());
+               cabinRequestModel.setValidTill(cabinRequestUser.getValidTill());
+               cabinRequestModel.setPurpose(cabinRequestUser.getPurpose());
+               cabinRequestModel.setUserId(cabinRequestUser.getUserId());
+               cabinRequestModel.setOfficeId(cabinRequestUser.getOfficeId());
+               cabinRequestModel.setStatus(cabinRequestUser.getStatus());
+               cabinRequestModelRepository.save(cabinRequestModel);
+           }
             return new ApiResponseModel<>(StatusResponse.success,null,"Cabin Request");
         }else {
             return new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin not available");
         }
     }
 
+    public ApiResponseModel addCabin(List<Cabin> cabins,String userId)
+    {
+        Optional<User> opt=userRepo.findById(userId);
+        if(opt.isPresent())
+        {
+            User user=opt.get();
+            for(Cabin cabin:cabins)
+            {
+                cabin.setOfficeId(user.getOfficeId());
+                cabinRepository.save(cabin);
+            }
+            return new ApiResponseModel(StatusResponse.success,null,"Cabin added");
+        }else{
+            return new ApiResponseModel(StatusResponse.unauthorized,null,"Unauthorized Request");
+        }
+    }
+
     public ApiResponseModel<List<Cabin>> getAvailableCabin(CabinAvaliableModel cabinAvaliableModel)
     {
         List<Cabin> cabins=cabinRepository.findCabinByOfficeId(cabinAvaliableModel.getOfficeId());
+        List<Cabin> cabinList=new ArrayList<>();
+
         List<BookingModel> bookings;
+        List<CabinRequestModel> cabinRequests;
 
         if(cabins==null)
         {
@@ -82,27 +120,48 @@ public class CabinRequestService {
                     cabinAvaliableModel.getValidFrom(),
                     cabinAvaliableModel.getValidTill(),
                     cabinAvaliableModel.getStartDate());
+            cabinRequests=cabinRequestModelRepository.findCabinBookingRequestSingleDay(cabinAvaliableModel.getOfficeId(),
+                    cabinAvaliableModel.getValidFrom(),
+                    cabinAvaliableModel.getValidTill(),
+                    cabinAvaliableModel.getStartDate(),
+                    BookingStatus.hold);
 
         }else {
             bookings=bookingModelRepository.findBookingsMultipleDaysBetweenDates(cabinAvaliableModel.getStartDate(),
                     cabinAvaliableModel.getEndDate(),
                     cabinAvaliableModel.getOfficeId());
+            cabinRequests=cabinRequestModelRepository.findCabinBookingRequestMultipleDay(cabinAvaliableModel.getStartDate(),
+                    cabinAvaliableModel.getEndDate(),
+                    cabinAvaliableModel.getOfficeId(),
+                    BookingStatus.hold);
         }
+        System.out.println("Cabin Request:"+cabinRequests.size());
         if(bookings!=null)
         {
             for(Cabin cabin:cabins)
             {
+                for(CabinRequestModel cabinRequest:cabinRequests)
+                {
+                    if(cabin.getCabinId()==cabinRequest.getCabinId())
+                    {
+                        cabin.setStatus(CabinAvaiability.Requested);
+                    }
+                }
+
                 for(BookingModel booking:bookings)
                 {
                     if(cabin.getCabinId()==booking.getCabinId())
                     {
-                        cabins.remove(cabin);
+                        cabin.setStatus(CabinAvaiability.Booked);
                     }
                 }
+                cabinList.add(cabin);
+
+
             }
-            return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
+            return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
         }
-        return new ApiResponseModel<>(StatusResponse.success,cabins,"Available Cabin");
+        return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
     }
 
     public ApiResponseModel getAllCabinRequest(User user)
@@ -129,6 +188,7 @@ public class CabinRequestService {
               cabinRequest.setCabinAvaiability(cabinAvaiability);
                 cabinRequestList.add(cabinRequest);
             }
+            System.out.println("Cabin Request List Size:"+cabinRequestList.size());
             return new ApiResponseModel<>(StatusResponse.success,cabinRequestList,"Cabin Request List");
         }
         else {
@@ -147,5 +207,17 @@ public class CabinRequestService {
              return new ApiResponseModel<>(StatusResponse.not_found,null,"No requests");
          }
   }
+
+    public static List<Date> getDatesBetween(Date startDate, Date endDate)  {
+        List<Date> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        while (!calendar.getTime().after(endDate)) {
+            dates.add(calendar.getTime());
+            calendar.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
 
 }

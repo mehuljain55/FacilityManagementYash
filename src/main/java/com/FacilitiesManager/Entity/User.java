@@ -1,6 +1,7 @@
 package com.FacilitiesManager.Entity;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
+import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,8 @@ public class User {
    private String mobileNo;
    private String password;
    private String officeId;
+    @Enumerated(EnumType.STRING)
+   private UserApprovalStatus status;
 
 
 
@@ -74,5 +77,13 @@ public class User {
 
     public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
+    }
+
+    public UserApprovalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserApprovalStatus status) {
+        this.status = status;
     }
 }
