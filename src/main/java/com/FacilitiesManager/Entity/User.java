@@ -12,6 +12,7 @@ public class User {
     @Enumerated(EnumType.STRING)
    private AccessRole role;
    private String name;
+   private String mobileNo;
    private String password;
    private String officeId;
 
@@ -65,5 +66,13 @@ public class User {
 
     public void setOfficeId(String officeId) {
         this.officeId = officeId;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
     }
 }

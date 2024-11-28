@@ -28,6 +28,7 @@ public class UserAuthorizationService {
         {
             return  new ApiResponseModel<>(StatusResponse.failed,null,"User already exists");
         }else {
+            userRequest.setRole(AccessRole.user);
            userRepo.save(userRequest);
             return  new ApiResponseModel<>(StatusResponse.success,null,"User added");
         }
