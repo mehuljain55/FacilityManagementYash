@@ -2,6 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
+import com.FacilitiesManager.Entity.Model.ApiRequestModel;
 import com.FacilitiesManager.Entity.Model.ApiRequestModelCabinRequest;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.CabinRequestService;
@@ -33,6 +34,9 @@ public class CabinController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+
+
 
 
 

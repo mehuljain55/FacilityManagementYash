@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Controller;
 
+import com.FacilitiesManager.Entity.Cabin;
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.*;
@@ -43,6 +44,19 @@ public class ManagerController {
         }
     }
 
+    @PostMapping("/viewAllUserList")
+    public ApiResponseModel<List<User>> getAllUserApprovalList(@RequestBody ApiRequestModel userRequestModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequestModel.getUser(),userRequestModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=userService.getUserApprovalList(userRequestModel.getUser().getEmailId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
     @PostMapping("/approve")
     public ApiResponseModel<List<User>> approveUser(@RequestBody ApiRequestUserModel userRequestModel)
     {
@@ -72,7 +86,7 @@ public class ManagerController {
 
 
     @PostMapping("/addCabin")
-    public ApiResponseModel addCabinRequest(@RequestBody ApiReaponseModelCabin cabinRequest)
+    public ApiResponseModel addCabinRequest(@RequestBody ApiRequestModelCabin cabinRequest)
     {
         boolean validateAccess=userAuthorizationService.validateUserAccess(cabinRequest.getUser(),cabinRequest.getToken(),accessRole);
         if(validateAccess)
@@ -96,4 +110,46 @@ public class ManagerController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+
+    @PostMapping ("/findAllCabinByOffice")
+    public ApiResponseModel<List<Cabin>> findAllCabin(@RequestBody ApiRequestModel userRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequest.getUser(),userRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=cabinRequestService.findAllCabin(userRequest.getUser().getEmailId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+    @PostMapping ("/updateCabin")
+    public ApiResponseModel<List<Cabin>> findAllCabin(@RequestBody ApiRequestModelCabin userRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequest.getUser(),userRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=cabinRequestService.updateCabinList(userRequest.getCabin());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+    @PostMapping("/viewAllCabinRequest")
+    public  ApiResponseModel viewBookingRequest(@RequestBody ApiRequestViewModel bookingRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getUser());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+
 }

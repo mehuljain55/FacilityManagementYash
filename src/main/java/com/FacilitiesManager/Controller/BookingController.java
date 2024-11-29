@@ -46,7 +46,7 @@ public class BookingController {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
         if(validateAccess)
         {
-            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getUser());
+            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinHoldRequest(bookingRequest.getUser());
             return apiResponseModel;
         }else {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
@@ -78,5 +78,4 @@ public class BookingController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
-
 }

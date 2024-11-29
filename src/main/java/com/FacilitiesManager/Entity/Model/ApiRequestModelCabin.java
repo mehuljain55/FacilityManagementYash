@@ -5,18 +5,18 @@ import com.FacilitiesManager.Entity.User;
 
 import java.util.List;
 
-public class ApiReaponseModelCabin {
+public class ApiRequestModelCabin {
     private String token;
     private User user;
     private List<Cabin> cabin;
 
-    public ApiReaponseModelCabin(String token, User user, List<Cabin> cabin) {
+    public ApiRequestModelCabin(String token, User user, List<Cabin> cabin) {
         this.token = token;
         this.user = user;
         this.cabin = cabin;
     }
 
-    public ApiReaponseModelCabin() {
+    public ApiRequestModelCabin() {
     }
 
     public String getToken() {

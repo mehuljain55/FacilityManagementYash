@@ -180,7 +180,40 @@ public class CabinRequestService {
         return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
     }
 
-    public ApiResponseModel getAllCabinRequest(User user)
+
+    public  ApiResponseModel findAllCabin(String userId)
+    {
+        Optional<User> opt=userRepo.findById(userId);
+        if(opt.isPresent())
+        {
+            User user=opt.get();
+            List<Cabin> cabins=cabinRepository.findCabinByOfficeId(user.getOfficeId());
+            return new ApiResponseModel<>(StatusResponse.success,cabins,"Cabins List");
+        }else{
+            return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized request");
+        }
+    }
+
+    public ApiResponseModel updateCabinList(List<Cabin> cabins)
+    {
+        try {
+            for (Cabin cabinRequest : cabins) {
+                Optional<Cabin> opt = cabinRepository.findById(cabinRequest.getCabinId());
+                Cabin cabin = opt.get();
+                cabin.setCabinName(cabin.getCabinName());
+                cabin.setCapacity(cabinRequest.getCapacity());
+                cabinRepository.save(cabin);
+            }
+            return new ApiResponseModel<>(StatusResponse.success, null, "Cabin updated");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ApiResponseModel<>(StatusResponse.failed, null, "Unable to update cabin");
+        }
+    }
+
+
+    public ApiResponseModel getAllCabinHoldRequest(User user)
     {
         List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold, user.getOfficeId());
         List<CabinRequest> cabinRequestList=new ArrayList<>();
@@ -222,6 +255,18 @@ public class CabinRequestService {
         }
         else {
          return new ApiResponseModel<>(StatusResponse.not_found, null, "No request on hold");
+        }
+    }
+
+    public ApiResponseModel getAllCabinRequest(User user)
+    {
+        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOffice(user.getOfficeId());
+        if(cabinRequests!=null)
+        {
+            return new ApiResponseModel<>(StatusResponse.success,cabinRequests,"Cabin Request List");
+        }
+        else {
+            return new ApiResponseModel<>(StatusResponse.not_found, null, "No Cabin request");
         }
     }
 
