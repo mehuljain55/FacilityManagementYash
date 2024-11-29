@@ -13,5 +13,5 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User,String> {
 
     @Query("SELECT u FROM User u WHERE  u.officeId=:officeId AND u.status=:status")
-    List<User> findUserPendingRequest(@Param("officeId") String officeId,@Param("status") UserApprovalStatus status);
+    List<User> findUserRequest(@Param("officeId") String officeId,@Param("status") UserApprovalStatus status);
 }

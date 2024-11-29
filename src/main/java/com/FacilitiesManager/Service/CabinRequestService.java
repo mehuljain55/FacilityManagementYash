@@ -165,6 +165,12 @@ public class CabinRequestService {
                         cabin.setStatus(CabinAvaiability.Booked);
                     }
                 }
+
+                if(cabin.getStatus()==null)
+                {
+                    cabin.setStatus(CabinAvaiability.Avaliable);
+                }
+
                 cabinList.add(cabin);
 
 

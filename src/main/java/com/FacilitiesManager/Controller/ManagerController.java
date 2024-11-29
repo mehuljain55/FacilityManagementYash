@@ -83,4 +83,17 @@ public class ManagerController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+    @PostMapping("/officeRequestSummary")
+    public ApiResponseModel getResquestStatusSummary(@RequestBody ApiRequestModel userRequestModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequestModel.getUser(),userRequestModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=userService.getRequestCountModel(userRequestModel.getUser().getOfficeId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
 }

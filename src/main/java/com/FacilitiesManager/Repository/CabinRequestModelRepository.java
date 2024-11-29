@@ -14,14 +14,14 @@ import java.util.List;
 public interface CabinRequestModelRepository extends JpaRepository<CabinRequestModel,Integer> {
 
     @Query("SELECT c FROM CabinRequestModel c WHERE (c.validFrom < :endTime and c.validTill > :startTime)  and c.date=:date"+
-            " AND c.officeId=:officeId")
+            " AND c.officeId=:officeId AND c.status=:status")
     List<CabinRequestModel> findCabinBookingRequestSingleDay(@Param("officeId") String  officeId,
                                                              @Param("startTime") LocalTime startTime,
                                                              @Param("endTime") LocalTime endTime,
                                                              @Param("date") Date date,
                                                              @Param("status")BookingStatus status);
 
-    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date <= :startDate AND c.date >= :endDate) AND c.officeId=:officeId AND c.status=:status")
+    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date < :endDate AND c.date > :startDate) AND c.officeId=:officeId AND c.status=:status")
     List<CabinRequestModel> findCabinBookingRequestMultipleDay(@Param("startDate") Date startDate,
                                                           @Param("endDate") Date endDate,
                                                           @Param("officeId") String officeId,
@@ -35,7 +35,7 @@ public interface CabinRequestModelRepository extends JpaRepository<CabinRequestM
                                                              @Param("date") Date date,
                                                              @Param("status")BookingStatus status);
 
-    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date <= :startDate AND c.date >= :endDate)" +
+    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date < :endDate AND c.date > :startDate)" +
             " AND c.cabinId=:cabinId AND c.status=:status")
     List<CabinRequestModel> findCabinBookingRequestByCabinMultipleDay(@Param("startDate") Date startDate,
                                                                @Param("endDate") Date endDate,

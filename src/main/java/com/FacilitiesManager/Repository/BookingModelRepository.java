@@ -29,12 +29,12 @@ public interface BookingModelRepository extends JpaRepository<BookingModel,Integ
                                                                @Param(("date"))Date date);
 
 
-    @Query("SELECT b FROM BookingModel b WHERE (b.date <= :startDate AND b.date >= :endDate) AND b.cabinId=:cabinId")
+    @Query("SELECT b FROM BookingModel b WHERE (b.date < :endDate AND b.date > :startDate) AND b.cabinId=:cabinId")
     List<BookingModel> findBookingByCabinIdDate(@Param("startDate") Date startDate,
                                             @Param("endDate") Date endDate,
                                             @Param("cabinId") int cabinId);
 
-    @Query("SELECT b FROM BookingModel b WHERE b.date <= :startDate AND b.date >= :endDate AND b.officeId=:officeId")
+    @Query("SELECT b FROM BookingModel b WHERE b.date < :endDate AND b.date > :startDate AND b.officeId=:officeId")
     List<BookingModel> findBookingsMultipleDaysBetweenDates(@Param("startDate") Date startDate,
                                                         @Param("endDate") Date endDate,
                                                         @Param("officeId") String officeId);
