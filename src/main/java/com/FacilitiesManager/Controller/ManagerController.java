@@ -2,10 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
-import com.FacilitiesManager.Entity.Model.ApiReaponseModelCabin;
-import com.FacilitiesManager.Entity.Model.ApiRequestModel;
-import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
-import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
@@ -45,6 +42,34 @@ public class ManagerController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+    @PostMapping("/approve")
+    public ApiResponseModel<List<User>> approveUser(@RequestBody ApiRequestUserModel userRequestModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequestModel.getUser(),userRequestModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=userService.approveUser(userRequestModel.getEmployeeId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+    @PostMapping("/block")
+    public ApiResponseModel<List<User>> blockUser(@RequestBody ApiRequestUserModel userRequestModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(userRequestModel.getUser(),userRequestModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=userService.userApprovalCancel(userRequestModel.getEmployeeId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+
 
     @PostMapping("/addCabin")
     public ApiResponseModel addCabinRequest(@RequestBody ApiReaponseModelCabin cabinRequest)

@@ -20,12 +20,14 @@ public class User {
    private UserApprovalStatus status;
 
 
-
-    public User(String emailId, AccessRole role, String name,String officeId) {
+    public User(String emailId, AccessRole role, String name, String mobileNo, String password, String officeId, UserApprovalStatus status) {
         this.emailId = emailId;
         this.role = role;
         this.name = name;
-        this.officeId=officeId;
+        this.mobileNo = mobileNo;
+        this.password = password;
+        this.officeId = officeId;
+        this.status = status;
     }
 
     public User() {

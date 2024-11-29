@@ -33,6 +33,32 @@ public class UserService {
         }
     }
 
+    public ApiResponseModel approveUser(String userId)
+    {
+        Optional<User> opt=userRepo.findById(userId);
+        if(opt.isPresent()) {
+            User user=opt.get();
+            user.setStatus(UserApprovalStatus.ACTIVE);
+            userRepo.save(user);
+            return new ApiResponseModel<>(StatusResponse.success,null,"User approved");
+        }else {
+            return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized user");
+        }
+    }
+
+    public ApiResponseModel userApprovalCancel(String userId)
+    {
+        Optional<User> opt=userRepo.findById(userId);
+        if(opt.isPresent()) {
+            User user=opt.get();
+            user.setStatus(UserApprovalStatus.BLOCKED);
+            userRepo.save(user);
+            return new ApiResponseModel<>(StatusResponse.success,null,"User blocked");
+        }else {
+            return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized user");
+        }
+    }
+
 
 
 }

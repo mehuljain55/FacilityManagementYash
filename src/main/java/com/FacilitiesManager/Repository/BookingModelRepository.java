@@ -20,7 +20,7 @@ public interface BookingModelRepository extends JpaRepository<BookingModel,Integ
                                                  @Param("endTime") LocalTime endTime,
                                                  @Param(("date")) Date date);
 
-    @Query("SELECT b FROM BookingModel b WHERE (b.validFrom <= :startTime AND b.validTill >= :endTime) " +
+    @Query("SELECT b FROM BookingModel b WHERE (b.validFrom < :endTime AND b.validTill > :startTime) " +
             "AND b.date=:date" +
             " AND b.cabinId=:cabinId")
     List<BookingModel> findBookingsByCabinIdSingleDayBetweenTimes( @Param("cabinId") int cabinId,

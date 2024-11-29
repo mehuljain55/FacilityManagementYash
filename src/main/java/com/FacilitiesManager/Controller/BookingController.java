@@ -4,9 +4,7 @@ import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
-import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
-import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
-import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Service.BookingService;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
@@ -29,8 +27,9 @@ public class BookingController {
     private final AccessRole accessRole=AccessRole.manager;
 
     @PostMapping("/approveBooking")
-    public ApiResponseModel createBooking(@RequestBody ApiRequestModelBooking booking)
+    public ApiResponseModel createBooking(@RequestBody ApiRequestBooking booking)
     {
+        System.out.println(booking);
         boolean validateAccess=userAuthorizationService.validateUserAccess(booking.getUser(),booking.getToken(),accessRole);
         if(validateAccess)
         {
@@ -54,6 +53,30 @@ public class BookingController {
         }
     }
 
+    @PostMapping("/cancelRequest")
+    public  ApiResponseModel cancelBookingRequest(@RequestBody ApiRequestBooking bookingRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=bookingService.cancelBookingRequest(bookingRequest.getCabinRequestModel());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
 
+    @PostMapping("/viewBooking")
+    public  ApiResponseModel viewBooking(@RequestBody ApiRequestModel bookingRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+          ApiResponseModel apiResponseModel=bookingService.viewBooking(bookingRequest.getUser());
+          return  apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
 
 }

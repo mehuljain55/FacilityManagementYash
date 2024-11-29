@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface CabinRequestModelRepository extends JpaRepository<CabinRequestModel,Integer> {
 
-    @Query("SELECT c FROM CabinRequestModel c WHERE (c.validFrom > :endTime and c.validTill < :startTime)  and c.date=:date"+
+    @Query("SELECT c FROM CabinRequestModel c WHERE (c.validFrom < :endTime and c.validTill > :startTime)  and c.date=:date"+
             " AND c.officeId=:officeId")
     List<CabinRequestModel> findCabinBookingRequestSingleDay(@Param("officeId") String  officeId,
                                                              @Param("startTime") LocalTime startTime,
@@ -21,9 +21,28 @@ public interface CabinRequestModelRepository extends JpaRepository<CabinRequestM
                                                              @Param("date") Date date,
                                                              @Param("status")BookingStatus status);
 
-    @Query("SELECT  c FROM CabinRequestModel c WHERE c.date <= :startDate AND c.date >= :endDate AND c.officeId=:officeId")
+    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date <= :startDate AND c.date >= :endDate) AND c.officeId=:officeId AND c.status=:status")
     List<CabinRequestModel> findCabinBookingRequestMultipleDay(@Param("startDate") Date startDate,
                                                           @Param("endDate") Date endDate,
                                                           @Param("officeId") String officeId,
                                                           @Param("status")BookingStatus status);
+
+    @Query("SELECT c FROM CabinRequestModel c WHERE (c.validFrom < :endTime and c.validTill > :startTime)  and c.date=:date"+
+            " AND c.cabinId=:cabinId AND c.status=:status")
+    List<CabinRequestModel> findCabinBookingRequestByCabinSingleDay(@Param("cabinId") int  cabinId,
+                                                             @Param("startTime") LocalTime startTime,
+                                                             @Param("endTime") LocalTime endTime,
+                                                             @Param("date") Date date,
+                                                             @Param("status")BookingStatus status);
+
+    @Query("SELECT  c FROM CabinRequestModel c WHERE (c.date <= :startDate AND c.date >= :endDate)" +
+            " AND c.cabinId=:cabinId AND c.status=:status")
+    List<CabinRequestModel> findCabinBookingRequestByCabinMultipleDay(@Param("startDate") Date startDate,
+                                                               @Param("endDate") Date endDate,
+                                                               @Param("cabinId") int cabinId,
+                                                               @Param("status")BookingStatus status);
+
+    @Query("SELECT c FROM CabinRequestModel c WHERE  c.cabinRequestId=:cabinRequestId")
+    List<CabinRequestModel> findCabinRequestByCabinRequestId(@Param("cabinRequestId") int cabinRequestId);
+
 }

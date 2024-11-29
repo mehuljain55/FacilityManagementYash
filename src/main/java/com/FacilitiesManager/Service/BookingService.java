@@ -1,17 +1,11 @@
 package com.FacilitiesManager.Service;
 
-import com.FacilitiesManager.Entity.BookingModel;
-import com.FacilitiesManager.Entity.Bookings;
-import com.FacilitiesManager.Entity.Cabin;
-import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
-import com.FacilitiesManager.Repository.BookingModelRepository;
-import com.FacilitiesManager.Repository.BookingRepository;
-import com.FacilitiesManager.Repository.CabinRepository;
-import com.FacilitiesManager.Repository.CabinRequestRepository;
+import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +25,36 @@ public class BookingService {
     private CabinRequestRepository cabinRequestRepository;
 
     @Autowired
+    private CabinRequestModelRepository cabinRequestModelRepository;
+
+    @Autowired
     private BookingModelRepository bookingModelRepository;
 
+    @Autowired
+    private UserRepository userRepo;
 
-     public ApiResponseModel createBooking(CabinRequest cabinRequest)
+
+    public ApiResponseModel viewBooking(User userRequest)
+    {
+        Optional<User> opt=userRepo.findById(userRequest.getEmailId());
+        if(opt.isPresent())
+        {
+            User user=opt.get();
+            List<Bookings> bookings=bookingRepository.findBookingsByOfficeId(user.getOfficeId());
+            return new ApiResponseModel<>(StatusResponse.success,bookings,"Booking List");
+        }else{
+            return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized request");
+
+        }
+
+
+    }
+
+     public ApiResponseModel createBooking(CabinRequest cabinRequestApproval)
      {
+         Optional<CabinRequest> opt=cabinRequestRepository.findById(cabinRequestApproval.getRequestId());
+         CabinRequest cabinRequest=opt.get();
+
          try{
              boolean avabality_status;
              if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
@@ -50,11 +69,11 @@ public class BookingService {
              if(avabality_status)
              {
                  Bookings bookings=new Bookings();
-                 Optional<Cabin> opt=cabinRepository.findById(cabinRequest.getCabinId());
-                 if(opt.isPresent())
+                 Optional<Cabin> opt1=cabinRepository.findById(cabinRequestApproval.getCabinId());
+                 if(opt1.isPresent())
                  {
-                     Cabin cabin=opt.get();
-                     bookings.setCabinId(cabin.getCabinId());
+                     Cabin cabin=opt1.get();
+                     bookings.setCabinId(cabinRequestApproval.getCabinId());
                      bookings.setPurpose(cabinRequest.getPurpose());
                      bookings.setUserId(cabinRequest.getUserId());
                      bookings.setOfficeId(cabin.getOfficeId());
@@ -62,6 +81,8 @@ public class BookingService {
                      bookings.setEndDate(cabinRequest.getEndDate());
                      bookings.setValidFrom(cabinRequest.getValidFrom());
                      bookings.setValidTill(cabinRequest.getValidTill());
+                     cabinRequest.setCabinId(cabinRequestApproval.getCabinId());
+                     cabinRequest.setCabinName(cabin.getCabinName());
                      cabinRequest.setStatus(BookingStatus.approved);
                      Bookings bookingRequest= bookingRepository.save(bookings);
                      List<Date> dates=getDatesBetween(cabinRequest.getStartDate(),cabinRequest.getEndDate());
@@ -78,6 +99,13 @@ public class BookingService {
                          bookingModel.setValidFrom(cabinRequest.getValidFrom());
                          bookingModel.setValidTill(cabinRequest.getValidTill());
                          bookingModelRepository.save(bookingModel);
+                     }
+
+                     List<CabinRequestModel> cabinRequestModels=cabinRequestModelRepository.findCabinRequestByCabinRequestId(cabinRequest.getRequestId());
+                     for(CabinRequestModel cabinRequestModel:cabinRequestModels)
+                     {
+                         cabinRequestModel.setStatus(BookingStatus.approved);
+                         cabinRequestModelRepository.save(cabinRequestModel);
                      }
 
                      cabinRequestRepository.save(cabinRequest);
@@ -97,6 +125,30 @@ public class BookingService {
          }
      }
 
+    public ApiResponseModel cancelBookingRequest(CabinRequest cabinRequestApproval)
+    {
+        Optional<CabinRequest> opt=cabinRequestRepository.findById(cabinRequestApproval.getRequestId());
+        CabinRequest cabinRequest=opt.get();
+        List<CabinRequestModel> cabinRequestModels=cabinRequestModelRepository.findCabinRequestByCabinRequestId(cabinRequest.getRequestId());
+
+            if(opt.isPresent())
+            {
+                cabinRequest.setStatus(BookingStatus.rejected);
+                for(CabinRequestModel cabinRequestModel:cabinRequestModels)
+                {
+                    cabinRequestModel.setStatus(BookingStatus.rejected);
+                    cabinRequestModelRepository.save(cabinRequestModel);
+                }
+                cabinRequestRepository.save(cabinRequest);
+                return  new ApiResponseModel<>(StatusResponse.success,null,"Booking request cancelled");
+
+            }
+            else {
+                return  new ApiResponseModel<>(StatusResponse.not_found,null,"Booking request not found");
+
+            }
+
+    }
 
 
     public boolean checkCabinAvabalitySingleDay(CabinRequest cabinRequest) {
@@ -116,6 +168,31 @@ public class BookingService {
 
         return bookings == null || bookings.isEmpty();
     }
+
+
+    public boolean checkCabinRequestSingleDay(CabinRequest cabinRequest) {
+        System.out.println("Cabin Request"+cabinRequest);
+        List<CabinRequestModel> bookings = cabinRequestModelRepository.findCabinBookingRequestByCabinSingleDay(
+                cabinRequest.getCabinId(),
+                cabinRequest.getValidFrom(),
+                cabinRequest.getValidTill(),
+                cabinRequest.getStartDate(),
+                BookingStatus.hold
+        );
+        return bookings == null || bookings.isEmpty();
+    }
+
+    public boolean checkCabinRequestMultipleDay(CabinRequest cabinRequest) {
+        List<CabinRequestModel> bookings = cabinRequestModelRepository.findCabinBookingRequestByCabinMultipleDay(cabinRequest.getStartDate(),
+                cabinRequest.getEndDate(),
+                cabinRequest.getCabinId(),
+                BookingStatus.hold);
+
+        return bookings == null || bookings.isEmpty();
+    }
+
+
+
 
 
 

@@ -46,7 +46,11 @@ public class CabinRequestService {
     {
         boolean isCabinAvailable;
 
-        if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
+        Optional<Cabin> opt=cabinRepository.findById(cabinRequest.getCabinId());
+        if(opt.isPresent())
+        {
+            Cabin cabin=opt.get();
+            if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
         {
             isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
             cabinRequest.setEndDate(cabinRequest.getStartDate());
@@ -63,12 +67,14 @@ public class CabinRequestService {
 
             cabinRequest.setStatus(BookingStatus.hold);
             cabinRequest.setUserId(user.getEmailId());
+            cabinRequest.setCabinName(cabin.getCabinName());
            CabinRequest cabinRequestUser= cabinRequestRepository.save(cabinRequest);
            for(Date date:dates)
            {
                CabinRequestModel cabinRequestModel=new CabinRequestModel();
                cabinRequestModel.setCabinRequestId(cabinRequestUser.getRequestId());
                cabinRequestModel.setCabinId(cabinRequestUser.getCabinId());
+               cabinRequestModel.setCabinName(cabin.getCabinName());
                cabinRequestModel.setDate(date);
                cabinRequestModel.setValidFrom(cabinRequestUser.getValidFrom());
                cabinRequestModel.setValidTill(cabinRequestUser.getValidTill());
@@ -81,6 +87,9 @@ public class CabinRequestService {
             return new ApiResponseModel<>(StatusResponse.success,null,"Cabin Request");
         }else {
             return new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin not available");
+        }
+        }else {
+            return new ApiResponseModel<>(StatusResponse.not_found,null,"Cabin not found");
         }
     }
 
@@ -136,6 +145,7 @@ public class CabinRequestService {
                     BookingStatus.hold);
         }
         System.out.println("Cabin Request:"+cabinRequests.size());
+        System.out.println("Booking Request:"+bookings.size());
         if(bookings!=null)
         {
             for(Cabin cabin:cabins)
@@ -173,18 +183,31 @@ public class CabinRequestService {
             for(CabinRequest cabinRequest:cabinRequests)
             {
                 boolean isCabinAvailable;
-                CabinAvaiability cabinAvaiability=CabinAvaiability.Not_Available;
+                boolean avability;
+                CabinAvaiability cabinAvaiability=CabinAvaiability.Booked;
                 if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
                 {
                     isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
+                    avability=bookingService.checkCabinRequestSingleDay(cabinRequest);
+
 
                 }else{
                     isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
+                    avability=bookingService.checkCabinRequestMultipleDay(cabinRequest);
                 }
+
+
                 if(isCabinAvailable)
                 {
                     cabinAvaiability=CabinAvaiability.Avaliable;
                 }
+
+                if(!avability)
+                {
+                    cabinAvaiability=CabinAvaiability.Requested;
+                }
+
+
               cabinRequest.setCabinAvaiability(cabinAvaiability);
                 cabinRequestList.add(cabinRequest);
             }

@@ -16,6 +16,7 @@ public class CabinRequestModel {
     private  int sno;
     private int cabinRequestId;
     private int cabinId;
+    private String cabinName;
     private String userId;
     private String purpose;
     private  String officeId;
@@ -48,6 +49,14 @@ public class CabinRequestModel {
 
     public void setCabinId(int cabinId) {
         this.cabinId = cabinId;
+    }
+
+    public String getCabinName() {
+        return cabinName;
+    }
+
+    public void setCabinName(String cabinName) {
+        this.cabinName = cabinName;
     }
 
     public String getUserId() {

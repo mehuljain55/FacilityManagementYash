@@ -16,6 +16,7 @@ public class CabinRequest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private  int requestId;
     private int cabinId;
+    private String cabinName;
     private String userId;
     private String purpose;
     private  String officeId;
@@ -143,5 +144,13 @@ public class CabinRequest {
 
     public void setCabinAvaiability(CabinAvaiability cabinAvaiability) {
         this.cabinAvaiability = cabinAvaiability;
+    }
+
+    public String getCabinName() {
+        return cabinName;
+    }
+
+    public void setCabinName(String cabinName) {
+        this.cabinName = cabinName;
     }
 }
