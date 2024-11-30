@@ -179,7 +179,7 @@ public class BookingService {
                 cabinRequest.getStartDate(),
                 BookingStatus.hold
         );
-        return bookings == null || bookings.isEmpty();
+        return bookings == null ||  bookings.size()<=1;
     }
 
     public boolean checkCabinRequestMultipleDay(CabinRequest cabinRequest) {
@@ -188,7 +188,7 @@ public class BookingService {
                 cabinRequest.getCabinId(),
                 BookingStatus.hold);
 
-        return bookings == null || bookings.isEmpty();
+        return bookings == null || bookings.size()<=1;
     }
 
 

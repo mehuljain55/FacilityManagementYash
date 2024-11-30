@@ -144,8 +144,7 @@ public class CabinRequestService {
                     cabinAvaliableModel.getOfficeId(),
                     BookingStatus.hold);
         }
-        System.out.println("Cabin Request:"+cabinRequests.size());
-        System.out.println("Booking Request:"+bookings.size());
+
         if(bookings!=null)
         {
             for(Cabin cabin:cabins)
@@ -154,7 +153,16 @@ public class CabinRequestService {
                 {
                     if(cabin.getCabinId()==cabinRequest.getCabinId())
                     {
-                        cabin.setStatus(CabinAvaiability.Requested);
+                        int requestCount= (int)cabinRequests.stream()
+                                .filter(c -> c.getCabinId() == cabin.getCabinId())  // Filter by cabinId
+                                .count();
+                        if(requestCount<=1&& cabinAvaliableModel.getBookingType().equals("Allotment")) {
+                            cabin.setStatus(CabinAvaiability.Avaliable);
+                            cabin.setMsg("Available");
+                        }else {
+                            cabin.setStatus(CabinAvaiability.Requested);
+                            cabin.setMsg("Already Requested");
+                        }
                     }
                 }
 
@@ -163,12 +171,14 @@ public class CabinRequestService {
                     if(cabin.getCabinId()==booking.getCabinId())
                     {
                         cabin.setStatus(CabinAvaiability.Booked);
+                        cabin.setMsg("Already Booked");
                     }
                 }
 
                 if(cabin.getStatus()==null)
                 {
                     cabin.setStatus(CabinAvaiability.Avaliable);
+                    cabin.setMsg("Available");
                 }
 
                 cabinList.add(cabin);
@@ -223,7 +233,7 @@ public class CabinRequestService {
             {
                 boolean isCabinAvailable;
                 boolean avability;
-                CabinAvaiability cabinAvaiability=CabinAvaiability.Booked;
+                CabinAvaiability cabinAvaiability=CabinAvaiability.Avaliable;
                 if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
                 {
                     isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
@@ -236,12 +246,12 @@ public class CabinRequestService {
                 }
 
 
-                if(isCabinAvailable)
+                if(!isCabinAvailable)
                 {
-                    cabinAvaiability=CabinAvaiability.Avaliable;
+                    cabinAvaiability=CabinAvaiability.Booked;
                 }
 
-                if(!avability)
+              else if(!avability)
                 {
                     cabinAvaiability=CabinAvaiability.Requested;
                 }
@@ -258,9 +268,16 @@ public class CabinRequestService {
         }
     }
 
-    public ApiResponseModel getAllCabinRequest(User user)
+    public ApiResponseModel getAllCabinRequest(User user,BookingStatus status)
     {
-        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOffice(user.getOfficeId());
+        List<CabinRequest> cabinRequests;
+        if(status.equals(BookingStatus.all))
+        {
+          cabinRequests=cabinRequestRepository.findCabinRequestByOffice(user.getOfficeId());
+        }
+        else {
+            cabinRequests = cabinRequestRepository.findCabinRequestByOfficeId(status, user.getOfficeId());
+        }
         if(cabinRequests!=null)
         {
             return new ApiResponseModel<>(StatusResponse.success,cabinRequests,"Cabin Request List");

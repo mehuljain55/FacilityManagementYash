@@ -144,7 +144,7 @@ public class ManagerController {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
         if(validateAccess)
         {
-            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getUser());
+            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinRequest(bookingRequest.getUser(),bookingRequest.getStatus());
             return apiResponseModel;
         }else {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");

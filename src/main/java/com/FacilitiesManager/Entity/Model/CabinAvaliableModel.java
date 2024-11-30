@@ -14,6 +14,7 @@ public class CabinAvaliableModel {
     private LocalTime validTill;
     @Enumerated(EnumType.STRING)
     private BookingValadity bookingValadity;
+    private String bookingType;
     private String officeId;
 
     public CabinAvaliableModel(Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill, BookingValadity bookingValadity) {
@@ -73,6 +74,14 @@ public class CabinAvaliableModel {
 
     public void setOfficeId(String officeId) {
         this.officeId = officeId;
+    }
+
+    public String getBookingType() {
+        return bookingType;
+    }
+
+    public void setBookingType(String bookingType) {
+        this.bookingType = bookingType;
     }
 
     @Override

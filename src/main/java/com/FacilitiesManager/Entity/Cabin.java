@@ -14,6 +14,7 @@ public class Cabin {
     private String officeId;
     @Enumerated(EnumType.STRING)
     private CabinAvaiability status;
+    private String msg;
 
     public Cabin() {
     }
@@ -56,5 +57,13 @@ public class Cabin {
 
     public void setStatus(CabinAvaiability status) {
         this.status = status;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }
