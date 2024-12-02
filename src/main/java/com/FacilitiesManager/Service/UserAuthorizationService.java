@@ -7,9 +7,11 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.UserLoginModel;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Repository.UserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,9 +23,11 @@ public class UserAuthorizationService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private  MailingService mailingService;
 
-    public ApiResponseModel<UserLoginModel> registerUser(User userRequest)
-    {
+
+    public ApiResponseModel<UserLoginModel> registerUser(User userRequest) throws MessagingException {
         Optional<User> opt=userRepo.findById(userRequest.getEmailId());
         if(opt.isPresent())
         {
@@ -31,7 +35,11 @@ public class UserAuthorizationService {
         }else {
             userRequest.setRole(AccessRole.user);
             userRequest.setStatus(UserApprovalStatus.PENDING);
-           userRepo.save(userRequest);
+            User user =userRepo.save(userRequest);
+            String content=mailingService.userRequest(user);
+            List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager, user.getOfficeId());
+            mailingService.sendMail(managers,"User account approval notification",content, user.getEmailId());
+
             return  new ApiResponseModel<>(StatusResponse.success,null,"User added");
         }
     }

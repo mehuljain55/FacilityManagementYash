@@ -33,8 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ApiResponseModel validateUser(@RequestBody User user)
-    {
+    public ApiResponseModel validateUser(@RequestBody User user) throws MessagingException {
         System.out.println(user);
         ApiResponseModel apiResponseModel=userAuthorizationService.registerUser(user);
         return apiResponseModel;

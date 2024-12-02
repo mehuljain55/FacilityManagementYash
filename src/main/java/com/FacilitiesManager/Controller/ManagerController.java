@@ -30,7 +30,6 @@ public class ManagerController {
     private final AccessRole accessRole=AccessRole.manager;
 
 
-
     @PostMapping("/userApprovalList")
     public ApiResponseModel<List<User>> getUserApprovalList(@RequestBody ApiRequestModel userRequestModel)
     {
@@ -150,6 +149,5 @@ public class ManagerController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
-
 
 }
