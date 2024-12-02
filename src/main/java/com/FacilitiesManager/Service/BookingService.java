@@ -1,11 +1,13 @@
 package com.FacilitiesManager.Service;
 
 import com.FacilitiesManager.Entity.*;
+import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Repository.*;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,9 @@ public class BookingService {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private  MailingService mailingService;
 
 
     public ApiResponseModel viewBooking(User userRequest)
@@ -108,7 +113,10 @@ public class BookingService {
                          cabinRequestModelRepository.save(cabinRequestModel);
                      }
 
-                     cabinRequestRepository.save(cabinRequest);
+                     CabinRequest cabinRequestUser= cabinRequestRepository.save(cabinRequest);
+                     String content=mailingService.createApprovalMail(cabinRequestUser);
+                     List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager,cabinRequestUser.getOfficeId());
+                     mailingService.sendMail(managers,"Cabin request approval notification",content,cabinRequestUser.getUserId());
                      return  new ApiResponseModel<>(StatusResponse.success,null,"Booking successfully created");
                  }else {
                      return  new ApiResponseModel<>(StatusResponse.not_found,null,"Cabin not found");
@@ -125,8 +133,7 @@ public class BookingService {
          }
      }
 
-    public ApiResponseModel cancelBookingRequest(CabinRequest cabinRequestApproval)
-    {
+    public ApiResponseModel cancelBookingRequest(CabinRequest cabinRequestApproval) throws MessagingException {
         Optional<CabinRequest> opt=cabinRequestRepository.findById(cabinRequestApproval.getRequestId());
         CabinRequest cabinRequest=opt.get();
         List<CabinRequestModel> cabinRequestModels=cabinRequestModelRepository.findCabinRequestByCabinRequestId(cabinRequest.getRequestId());
@@ -139,7 +146,12 @@ public class BookingService {
                     cabinRequestModel.setStatus(BookingStatus.rejected);
                     cabinRequestModelRepository.save(cabinRequestModel);
                 }
-                cabinRequestRepository.save(cabinRequest);
+                CabinRequest cabinRequestUser=    cabinRequestRepository.save(cabinRequest);
+                String content=mailingService.createRejectionMail(cabinRequestUser);
+                List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager,cabinRequestUser.getOfficeId());
+                mailingService.sendMail(managers,"Cabin request rejection notification",content,cabinRequestUser.getUserId());
+
+
                 return  new ApiResponseModel<>(StatusResponse.success,null,"Booking request cancelled");
 
             }

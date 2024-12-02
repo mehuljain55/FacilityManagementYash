@@ -1,13 +1,11 @@
 package com.FacilitiesManager.Service;
 
 import com.FacilitiesManager.Entity.*;
-import com.FacilitiesManager.Entity.Enums.BookingStatus;
-import com.FacilitiesManager.Entity.Enums.BookingValadity;
-import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
-import com.FacilitiesManager.Entity.Enums.StatusResponse;
+import com.FacilitiesManager.Entity.Enums.*;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.*;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,11 +37,12 @@ public class CabinRequestService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private MailingService mailingService;
 
 
 
-    public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user)
-    {
+    public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user) throws MessagingException {
         boolean isCabinAvailable;
 
         Optional<Cabin> opt=cabinRepository.findById(cabinRequest.getCabinId());
@@ -84,6 +83,11 @@ public class CabinRequestService {
                cabinRequestModel.setStatus(cabinRequestUser.getStatus());
                cabinRequestModelRepository.save(cabinRequestModel);
            }
+
+            String content=mailingService.createCabinRequestMail(cabinRequestUser);
+            List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager,cabinRequestUser.getOfficeId());
+            mailingService.sendMail(managers,"Cabin request inititation notification",content,cabinRequestUser.getUserId());
+
             return new ApiResponseModel<>(StatusResponse.success,null,"Cabin Request");
         }else {
             return new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin not available");

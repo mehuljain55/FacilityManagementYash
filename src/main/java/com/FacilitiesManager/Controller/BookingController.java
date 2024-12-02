@@ -8,6 +8,7 @@ import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Service.BookingService;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,8 +55,7 @@ public class BookingController {
     }
 
     @PostMapping("/cancelRequest")
-    public  ApiResponseModel cancelBookingRequest(@RequestBody ApiRequestBooking bookingRequest)
-    {
+    public  ApiResponseModel cancelBookingRequest(@RequestBody ApiRequestBooking bookingRequest) throws MessagingException {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
         if(validateAccess)
         {

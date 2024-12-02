@@ -8,6 +8,7 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,8 +61,8 @@ public class UserController {
 
 
     @PostMapping("/createBooking")
-    public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel)
-    {
+    public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel) throws MessagingException {
+
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
         ApiResponseModel apiResponseModel;
         if(validateAccess)
@@ -86,10 +87,5 @@ public class UserController {
           return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
       }
   }
-
-
-
-
-
 
 }
