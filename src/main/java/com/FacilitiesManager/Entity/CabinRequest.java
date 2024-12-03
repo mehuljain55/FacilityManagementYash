@@ -20,6 +20,10 @@ public class CabinRequest {
     private String userId;
     private String purpose;
     private  String officeId;
+
+    @Temporal(TemporalType.DATE)
+    private Date requestDate;
+
     @Temporal(TemporalType.DATE)
     private Date startDate;
     @Temporal(TemporalType.DATE)
@@ -152,5 +156,13 @@ public class CabinRequest {
 
     public void setCabinName(String cabinName) {
         this.cabinName = cabinName;
+    }
+
+    public Date getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(Date requestDate) {
+        this.requestDate = requestDate;
     }
 }
