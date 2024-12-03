@@ -8,6 +8,7 @@ import com.FacilitiesManager.Entity.Model.UserLoginModel;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Repository.UserRepository;
 import jakarta.mail.MessagingException;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class UserAuthorizationService {
     private  MailingService mailingService;
 
 
+
     public ApiResponseModel<UserLoginModel> registerUser(User userRequest) throws MessagingException {
         Optional<User> opt=userRepo.findById(userRequest.getEmailId());
         if(opt.isPresent())
@@ -34,6 +36,7 @@ public class UserAuthorizationService {
             return  new ApiResponseModel<>(StatusResponse.failed,null,"User already exists");
         }else {
             userRequest.setRole(AccessRole.user);
+            userRequest.setPassword(hashPassword(userRequest.getPassword()));
             userRequest.setStatus(UserApprovalStatus.PENDING);
             User user =userRepo.save(userRequest);
             String content=mailingService.userRequest(user);
@@ -51,13 +54,17 @@ public class UserAuthorizationService {
         if(opt.isPresent())
         {
             User user=opt.get();
-            if(user.getPassword().equals(password)&& user.getStatus().equals(UserApprovalStatus.ACTIVE))
+            if(!(user.getStatus().equals(UserApprovalStatus.ACTIVE)))
+            {
+                return  new ApiResponseModel<>(StatusResponse.unauthorized,null,"User approval pending");
+            }
+            else if((verifyPassword(password,user.getPassword())))
             {
                 String token=jwtUtils.generateToken(user);
                 UserLoginModel userLoginModel=new UserLoginModel(user,token);
                 return  new ApiResponseModel<>(StatusResponse.success,userLoginModel,"User Validated");
             }else {
-                return  new ApiResponseModel<>(StatusResponse.unauthorized,null,"Invalid Credential");
+                return  new ApiResponseModel<>(StatusResponse.unauthorized,null,"Invalid password");
             }
         }else {
             return  new ApiResponseModel<>(StatusResponse.not_found,null,"User Not exists");
@@ -92,7 +99,16 @@ public class UserAuthorizationService {
     }
 
 
+    private String hashPassword(String rawPassword) {
+        return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
     }
+
+    public boolean verifyPassword(String rawPassword, String hashedPassword) {
+        return BCrypt.checkpw(rawPassword, hashedPassword);
+    }
+
+
+}
 
 
 
