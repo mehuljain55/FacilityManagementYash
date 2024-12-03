@@ -1,18 +1,19 @@
 package com.FacilitiesManager.Service;
 
-import com.FacilitiesManager.Entity.CabinRequest;
-import com.FacilitiesManager.Entity.CabinRequestModel;
+
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.DashboardModel;
 import com.FacilitiesManager.Entity.User;
+import com.FacilitiesManager.Repository.BookingModelRepository;
 import com.FacilitiesManager.Repository.CabinRequestRepository;
 import com.FacilitiesManager.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,9 @@ public class UserService {
 
     @Autowired
     private CabinRequestRepository cabinRequestRepository;
+
+    @Autowired
+    private BookingModelRepository bookingModelRepository;
 
     public ApiResponseModel getUserApprovalList(String userId)
     {
@@ -74,12 +78,14 @@ public class UserService {
        int cabinRequestRejected=(cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.rejected,officeId)).size();
        int userRequestPending=(userRepo.findUserRequest(officeId,UserApprovalStatus.PENDING)).size();
        int userRequestApproved=(userRepo.findUserRequest(officeId,UserApprovalStatus.ACTIVE)).size();
+       int todaysBooking=(bookingModelRepository.findBookingsMultipleDaysBetweenDates(new Date(),new Date(),officeId)).size();
         DashboardModel dashboardModel=new DashboardModel();
         dashboardModel.setCabinRequestHold(cabinRequestHold);
         dashboardModel.setUserRequestApproved(cabinRequestApproved);
         dashboardModel.setCabinRequestRejected(cabinRequestRejected);
         dashboardModel.setUserRequestPending(userRequestPending);
         dashboardModel.setUserRequestApproved(userRequestApproved);
+        dashboardModel.setTodaysCabinBooking(todaysBooking);
         return new ApiResponseModel<>(StatusResponse.success,dashboardModel,"Manager dashboard");
 
     }

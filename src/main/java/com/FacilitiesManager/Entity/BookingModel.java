@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Entity;
 
+import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -20,6 +21,7 @@ public class BookingModel {
         private Date date;
         private LocalTime validFrom;
         private LocalTime validTill;
+        private BookingStatus status;
 
     public BookingModel(int sno, int bookingId, int cabinId, String userId, String officeId, String purpose, Date date, LocalTime validFrom, LocalTime validTill) {
         this.sno = sno;
@@ -108,5 +110,26 @@ public class BookingModel {
         this.validTill = validTill;
     }
 
+    public BookingStatus getStatus() {
+        return status;
+    }
 
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "BookingModel{" +
+                "sno=" + sno +
+                ", bookingId=" + bookingId +
+                ", cabinId=" + cabinId +
+                ", userId='" + userId + '\'' +
+                ", officeId='" + officeId + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ", date=" + date +
+                ", validFrom=" + validFrom +
+                ", validTill=" + validTill +
+                '}';
+    }
 }

@@ -7,6 +7,7 @@ public class ApiRequestBooking {
     private String token;
     private CabinRequest cabinRequestModel;
     private User user;
+    private String userId;
 
     public ApiRequestBooking(String token, CabinRequest cabinRequestModel, User user) {
         this.token = token;
@@ -41,5 +42,11 @@ public class ApiRequestBooking {
         this.user = user;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

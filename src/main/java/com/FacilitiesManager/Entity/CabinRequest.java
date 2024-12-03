@@ -165,4 +165,24 @@ public class CabinRequest {
     public void setRequestDate(Date requestDate) {
         this.requestDate = requestDate;
     }
+
+    @Override
+    public String toString() {
+        return "CabinRequest{" +
+                "requestId=" + requestId +
+                ", cabinId=" + cabinId +
+                ", cabinName='" + cabinName + '\'' +
+                ", userId='" + userId + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ", officeId='" + officeId + '\'' +
+                ", requestDate=" + requestDate +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", validFrom=" + validFrom +
+                ", validTill=" + validTill +
+                ", bookingValadity=" + bookingValadity +
+                ", status=" + status +
+                ", cabinAvaiability=" + cabinAvaiability +
+                '}';
+    }
 }

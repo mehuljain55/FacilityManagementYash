@@ -47,6 +47,34 @@ public class MailingService {
         System.out.println("Mail sent to: " + String.join(", ", to));
     }
 
+
+    @Async("mailTaskExecutor")
+    public void sendIndividual(String to, String subject, String body, List<String> cc) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        if (to != null && !to.isEmpty()) {
+            helper.setCc(to.split(","));
+        }
+
+        if (cc != null && !cc.isEmpty()) {
+            helper.setTo(cc.toArray(new String[0]));
+        } else {
+            throw new IllegalArgumentException("The 'to' field cannot be null or empty.");
+        }
+
+        helper.setSubject(subject);
+        helper.setText(createCustomTemplate(body), true); // Use custom template
+        helper.setFrom("Yash Technologies <noreply.yashtechnologies@gmail.com>");
+
+
+
+
+
+        mailSender.send(message);
+        System.out.println("Mail sent to: " + String.join(", ", to));
+    }
+
     public String createCustomTemplate(String body) {
         return """
                 <html>
@@ -300,8 +328,5 @@ public class MailingService {
 
         );
     }
-
-
-
 
 }

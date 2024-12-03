@@ -9,6 +9,7 @@ public class ApiRequestModelBooking {
     private CabinRequest cabinRequestModel;
     private User user;
     private String officeId;
+    private String userId;
 
     public ApiRequestModelBooking() {
     }

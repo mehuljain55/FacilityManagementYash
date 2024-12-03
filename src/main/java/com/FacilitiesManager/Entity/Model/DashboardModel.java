@@ -6,6 +6,7 @@ public class DashboardModel {
     private int cabinRequestRejected;
     private int userRequestPending;
     private int userRequestApproved;
+    private int todaysCabinBooking;
 
     public DashboardModel(int cabinRequestHold, int cabinRequestApproved, int cabinRequestRejected, int userRequestPending, int userRequestApproved) {
         this.cabinRequestHold = cabinRequestHold;
@@ -56,5 +57,13 @@ public class DashboardModel {
 
     public void setUserRequestApproved(int userRequestApproved) {
         this.userRequestApproved = userRequestApproved;
+    }
+
+    public int getTodaysCabinBooking() {
+        return todaysCabinBooking;
+    }
+
+    public void setTodaysCabinBooking(int todaysCabinBooking) {
+        this.todaysCabinBooking = todaysCabinBooking;
     }
 }

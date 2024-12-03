@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Entity;
 
+import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -13,6 +14,7 @@ public class Bookings {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private  int bookingId;
+    private int cabinRequestId;
     private int cabinId;
     private String userId;
     private String officeId;
@@ -23,6 +25,7 @@ public class Bookings {
     private Date endDate;
     private LocalTime validFrom;
     private LocalTime validTill;
+    private BookingStatus status;
 
 
     public Bookings(int bookingId, int cabinId, String userId, String officeId, String purpose, Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill) {
@@ -110,6 +113,22 @@ public class Bookings {
 
     public void setValidTill(LocalTime validTill) {
         this.validTill = validTill;
+    }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+    public int getCabinRequestId() {
+        return cabinRequestId;
+    }
+
+    public void setCabinRequestId(int cabinRequestId) {
+        this.cabinRequestId = cabinRequestId;
     }
 
     @Override
