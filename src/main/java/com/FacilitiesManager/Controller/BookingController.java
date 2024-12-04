@@ -99,8 +99,9 @@ public class BookingController {
     }
 
     @PostMapping("/createVipBooking")
-    public  ApiResponseModel createAdminBooking(ApiRequestCabinModifyModel apiRequestCabinModifyModel)
+    public  ApiResponseModel createAdminBooking(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
     {
+        System.out.println(apiRequestCabinModifyModel);
         boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
         if(validateAccess)
         {

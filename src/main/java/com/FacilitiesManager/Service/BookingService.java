@@ -196,15 +196,18 @@ public class BookingService {
     }
 
     public ApiResponseModel createVipBooking(ApiRequestCabinModifyModel apiRequestCabinModifyModel) {
-        UserCabinModifyModel userCabinModifyModel = apiRequestCabinModifyModel.getUserCabinModifyModel();
+        UserCabinModifyModel userCabinModifyModel=new UserCabinModifyModel();
         CabinRequest cabinRequest = apiRequestCabinModifyModel.getCabinRequest();
 
-        Optional<Bookings> optionalBookings = bookingRepository.findById(userCabinModifyModel.getBookingId());
-        Bookings bookings = optionalBookings.get();
-        List<BookingModel> bookingModelList = bookingModelRepository.findByBookingId(bookings.getBookingId());
-        Optional<Cabin> optionalCabin = cabinRepository.findById(userCabinModifyModel.getNewCabinId());
-        Cabin cabin = optionalCabin.get();
-        if(userCabinModifyModel!=null) {
+        if(apiRequestCabinModifyModel.getUserCabinModifyModel()!=null) {
+            System.out.println("Booking id:"+userCabinModifyModel.getBookingId());
+            Optional<Bookings> optionalBookings = bookingRepository.findById(userCabinModifyModel.getBookingId());
+            Bookings bookings = optionalBookings.get();
+            List<BookingModel> bookingModelList = bookingModelRepository.findByBookingId(bookings.getBookingId());
+            Optional<Cabin> optionalCabin = cabinRepository.findById(userCabinModifyModel.getNewCabinId());
+            Cabin cabin = optionalCabin.get();
+
+            userCabinModifyModel= apiRequestCabinModifyModel.getUserCabinModifyModel();
             if (userCabinModifyModel.getStatus().equals(BookingStatus.cancelled)) {
                 bookings.setStatus(BookingStatus.cancelled);
                 bookingRepository.save(bookings);
@@ -231,14 +234,14 @@ public class BookingService {
             newUserBooking.setCabinId(userCabin.getCabinId());
             newUserBooking.setPurpose(cabinRequest.getPurpose());
             newUserBooking.setUserId(cabinRequest.getUserId());
-            newUserBooking.setOfficeId(cabin.getOfficeId());
+            newUserBooking.setOfficeId(userCabin.getOfficeId());
             newUserBooking.setStartDate(cabinRequest.getStartDate());
             newUserBooking.setEndDate(cabinRequest.getEndDate());
             newUserBooking.setValidFrom(cabinRequest.getValidFrom());
             newUserBooking.setValidTill(cabinRequest.getValidTill());
             newUserBooking.setStatus(BookingStatus.approved);
 
-            Bookings bookingRequest = bookingRepository.save(bookings);
+            Bookings bookingRequest = bookingRepository.save(newUserBooking);
             List<Date> dates = getDatesBetween(cabinRequest.getStartDate(), cabinRequest.getEndDate());
 
             for (Date date : dates) {
@@ -248,7 +251,7 @@ public class BookingService {
                 bookingModel.setCabinId(bookingRequest.getCabinId());
                 bookingModel.setPurpose(cabinRequest.getPurpose());
                 bookingModel.setUserId(cabinRequest.getUserId());
-                bookingModel.setOfficeId(cabin.getOfficeId());
+                bookingModel.setOfficeId(userCabin.getOfficeId());
                 bookingModel.setValidFrom(cabinRequest.getValidFrom());
                 bookingModel.setValidTill(cabinRequest.getValidTill());
                 bookingModel.setStatus(BookingStatus.approved);

@@ -51,4 +51,14 @@ public class ApiRequestCabinModifyModel {
     public void setCabinRequest(CabinRequest cabinRequest) {
         this.cabinRequest = cabinRequest;
     }
+
+    @Override
+    public String toString() {
+        return "ApiRequestCabinModifyModel{" +
+                "token='" + token + '\'' +
+                ", user=" + user +
+                ", userCabinModifyModel=" + userCabinModifyModel +
+                ", cabinRequest=" + cabinRequest +
+                '}';
+    }
 }
