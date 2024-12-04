@@ -2,12 +2,14 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
+import com.FacilitiesManager.Entity.Model.ApiRequestBookingViewModel;
 import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
 import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
+import com.FacilitiesManager.Service.UserService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,9 @@ public class UserController {
 
     @Autowired
     private CabinRequestService cabinRequestService;
+
+    @Autowired
+    private UserService userService;
 
 
     private final AccessRole accessRole=AccessRole.user;
@@ -81,6 +86,21 @@ public class UserController {
       if(validateAccess)
       {
           apiResponseModel=cabinRequestService.getCabinRequestByUser(requestViewModel.getUser());
+          return apiResponseModel;
+      }else {
+          return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+      }
+  }
+
+
+  @PostMapping("/allBookingRequestByOfficeId")
+  public  ApiResponseModel getBookingList(@RequestBody ApiRequestBookingViewModel apiRequestBookingViewModel)
+  {
+      boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestBookingViewModel.getUser(),apiRequestBookingViewModel.getToken(),accessRole);
+      ApiResponseModel apiResponseModel;
+      if(validateAccess)
+      {
+          apiResponseModel=userService.getAllCabinView(apiRequestBookingViewModel);
           return apiResponseModel;
       }else {
           return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");

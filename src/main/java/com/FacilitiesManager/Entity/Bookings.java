@@ -25,6 +25,7 @@ public class Bookings {
     private Date endDate;
     private LocalTime validFrom;
     private LocalTime validTill;
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
 

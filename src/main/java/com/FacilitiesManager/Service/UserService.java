@@ -1,18 +1,20 @@
 package com.FacilitiesManager.Service;
 
 
+import com.FacilitiesManager.Entity.Bookings;
+import com.FacilitiesManager.Entity.Cabin;
+import com.FacilitiesManager.Entity.CabinRequest;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
-import com.FacilitiesManager.Entity.Model.ApiResponseModel;
-import com.FacilitiesManager.Entity.Model.DashboardModel;
+import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Entity.User;
-import com.FacilitiesManager.Repository.BookingModelRepository;
-import com.FacilitiesManager.Repository.CabinRequestRepository;
-import com.FacilitiesManager.Repository.UserRepository;
+import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,12 @@ public class UserService {
 
     @Autowired
     private BookingModelRepository bookingModelRepository;
+
+    @Autowired
+    private CabinRepository cabinRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public ApiResponseModel getUserApprovalList(String userId)
     {
@@ -88,6 +96,26 @@ public class UserService {
         dashboardModel.setTodaysCabinBooking(todaysBooking);
         return new ApiResponseModel<>(StatusResponse.success,dashboardModel,"Manager dashboard");
 
+    }
+
+    public  ApiResponseModel getAllCabinView( ApiRequestBookingViewModel apiRequestModel)
+    {
+           List<Cabin> cabins=cabinRepository.findCabinByOfficeId(apiRequestModel.getOfficeId());
+            List<CabinModelList> cabinModelList=new ArrayList<>();
+           for (Cabin cabin:cabins)
+           {
+               CabinModelList cabinModel=new CabinModelList();
+               List<Bookings> bookings=bookingRepository.findBookingByCabinId(apiRequestModel.getStartDate(),apiRequestModel.getEndDate(),cabin.getCabinId(),BookingStatus.approved);
+               cabinModel.setCabin(cabin);
+               cabinModel.setBookings(bookings);
+               cabinModelList.add(cabinModel);
+           }
+           if (cabinModelList.isEmpty())
+           {
+               return new ApiResponseModel<>(StatusResponse.not_found,null,"Cabin Avaliablility");
+           }else {
+               return new ApiResponseModel<>(StatusResponse.success, cabinModelList, "Cabin Avaliablility");
+           }
     }
 
 

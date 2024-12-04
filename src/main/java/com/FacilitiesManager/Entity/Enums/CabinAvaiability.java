@@ -5,5 +5,6 @@ public enum CabinAvaiability {
     Not_Available,
     Booked,
     Requested,
+    RESERVED,
 
 }

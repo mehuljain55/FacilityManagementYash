@@ -16,6 +16,7 @@ public class CabinAvaliableModel {
     private BookingValadity bookingValadity;
     private String bookingType;
     private String officeId;
+    private int cabinId;
 
     public CabinAvaliableModel(Date startDate, Date endDate, LocalTime validFrom, LocalTime validTill, BookingValadity bookingValadity) {
         this.startDate = startDate;
@@ -82,6 +83,14 @@ public class CabinAvaliableModel {
 
     public void setBookingType(String bookingType) {
         this.bookingType = bookingType;
+    }
+
+    public int getCabinId() {
+        return cabinId;
+    }
+
+    public void setCabinId(int cabinId) {
+        this.cabinId = cabinId;
     }
 
     @Override

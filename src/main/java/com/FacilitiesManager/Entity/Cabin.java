@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Entity;
 
+import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.CabinAvaiability;
 import jakarta.persistence.*;
 
@@ -12,6 +13,8 @@ public class Cabin {
     private String cabinName;
     private int capacity;
     private String officeId;
+    @Enumerated(EnumType.STRING)
+    private BookingValadity bookingType;
     @Enumerated(EnumType.STRING)
     private CabinAvaiability status;
     private String msg;

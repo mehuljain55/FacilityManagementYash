@@ -40,19 +40,7 @@ public class BookingController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
-    @PostMapping("/approveBookingVip")
-    public ApiResponseModel createBookingVip(@RequestBody ApiRequestBooking booking)
-    {
-        System.out.println(booking);
-        boolean validateAccess=userAuthorizationService.validateUserAccess(booking.getUser(),booking.getToken(),accessRole);
-        if(validateAccess)
-        {
-            ApiResponseModel apiResponseModel=bookingService.createBookingVip(booking.getCabinRequestModel(),booking.getUserId());
-            return apiResponseModel;
-        }else {
-            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
-        }
-    }
+
 
     @PostMapping("/viewRequest")
     public  ApiResponseModel viewBookingRequest(@RequestBody ApiRequestViewModel bookingRequest)
@@ -91,5 +79,20 @@ public class BookingController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
+
+    @PostMapping("/viewUserCabinBooking")
+    public ApiResponseModel viewCabinBookingRequest(@RequestBody ApiRequestModelCabinRequest apiRequestModelCabinRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestModelCabinRequest.getUser(),apiRequestModelCabinRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=bookingService.viewBookingByCabinIdDate(apiRequestModelCabinRequest.getCabinAvaliableModel());
+            return  apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+
 
 }
