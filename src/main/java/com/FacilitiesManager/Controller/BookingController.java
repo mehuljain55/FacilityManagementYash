@@ -2,6 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.Enums.AccessRole;
+import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.BookingValadity;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.*;
@@ -9,8 +10,12 @@ import com.FacilitiesManager.Service.BookingService;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
 import jakarta.mail.MessagingException;
+import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/booking")
@@ -93,6 +98,18 @@ public class BookingController {
         }
     }
 
+    @PostMapping("/createVipBooking")
+    public  ApiResponseModel createAdminBooking(ApiRequestCabinModifyModel apiRequestCabinModifyModel)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=bookingService.createVipBooking(apiRequestCabinModifyModel);
+            return  apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
 
 
 }

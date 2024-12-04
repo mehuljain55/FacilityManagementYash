@@ -16,6 +16,7 @@ public class Bookings {
     private  int bookingId;
     private int cabinRequestId;
     private int cabinId;
+    private String cabinName;
     private String userId;
     private String officeId;
     private String purpose;
@@ -122,6 +123,14 @@ public class Bookings {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public String getCabinName() {
+        return cabinName;
+    }
+
+    public void setCabinName(String cabinName) {
+        this.cabinName = cabinName;
     }
 
     public int getCabinRequestId() {
