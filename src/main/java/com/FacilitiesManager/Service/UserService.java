@@ -89,8 +89,10 @@ public class UserService {
        int todaysBooking=(bookingModelRepository.findBookingsMultipleDaysBetweenDates(new Date(),new Date(),officeId)).size();
         DashboardModel dashboardModel=new DashboardModel();
         dashboardModel.setCabinRequestHold(cabinRequestHold);
-        dashboardModel.setUserRequestApproved(cabinRequestApproved);
         dashboardModel.setCabinRequestRejected(cabinRequestRejected);
+        dashboardModel.setCabinRequestApproved(cabinRequestApproved);
+
+        dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setUserRequestPending(userRequestPending);
         dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setTodaysCabinBooking(todaysBooking);

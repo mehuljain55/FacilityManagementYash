@@ -50,8 +50,14 @@ public class BookingService {
         if(opt.isPresent())
         {
             User user=opt.get();
+            if(userRequest.getRole().equals(AccessRole.super_admin))
+            {
+                   user.setOfficeId(userRequest.getOfficeId());
+            }
+
             List<Bookings> bookings=bookingRepository.findBookingsByOfficeId(user.getOfficeId());
             return new ApiResponseModel<>(StatusResponse.success,bookings,"Booking List");
+
         }else{
             return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized request");
 

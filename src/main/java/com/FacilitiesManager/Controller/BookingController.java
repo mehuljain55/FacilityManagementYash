@@ -126,7 +126,7 @@ public class BookingController {
     }
 
     @PostMapping("/createReservation")
-    public  ApiResponseModel createReservationCabin(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
+    public  ApiResponseModel createReservationVipCabin(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
     {
         System.out.println(apiRequestCabinModifyModel);
         boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
@@ -134,6 +134,19 @@ public class BookingController {
         {
             ApiResponseModel apiResponseModel=bookingService.createVipBooking(apiRequestCabinModifyModel);
             return  apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+    @PostMapping("/createReservationCustomDate")
+    public ApiResponseModel createCabinReservationCustomDate(@RequestBody ApiRequestModelBooking cabinReserveModel) throws MessagingException {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(cabinReserveModel.getUser(),cabinReserveModel.getToken(),accessRole);
+        ApiResponseModel apiResponseModel;
+        if(validateAccess)
+        {
+            apiResponseModel=cabinRequestService.createCabinReservation(cabinReserveModel.getCabinRequestModel(),cabinReserveModel.getUser());
+            return apiResponseModel;
         }else {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }

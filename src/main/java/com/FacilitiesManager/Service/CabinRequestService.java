@@ -6,6 +6,7 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.*;
 import jakarta.mail.MessagingException;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -369,6 +370,36 @@ public class CabinRequestService {
         else {
             return new ApiResponseModel<>(StatusResponse.not_found, null, "No Cabin request");
         }
+    }
+
+    public ApiResponseModel createCabinReservation(CabinRequest cabinRequest,User userRequest)
+    {
+        try {
+
+
+            Optional<Cabin> optionalCabin = cabinRepository.findById(cabinRequest.getCabinId());
+            Cabin cabin = optionalCabin.get();
+            Optional<User> optionalUser = userRepo.findById(userRequest.getEmailId());
+            User user = optionalUser.get();
+
+            ReservationList reservationList = new ReservationList();
+            reservationList.setCabinId(cabinRequest.getCabinId());
+            reservationList.setCabinName(cabin.getCabinName());
+            reservationList.setDate(cabinRequest.getStartDate());
+            reservationList.setValidFrom(cabinRequest.getValidFrom());
+            reservationList.setValidTill(cabinRequest.getValidTill());
+            reservationList.setOfficeId(user.getOfficeId());
+            reservationList.setStatus(BookingStatus.approved);
+            reservationRepo.save(reservationList);
+            return new ApiResponseModel<>(StatusResponse.success,null,"Cabin reserved");
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to reserve cabin");
+
+        }
+
     }
 
     public ApiResponseModel getCabinRequestByUser(User user)
