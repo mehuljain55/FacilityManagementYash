@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +28,8 @@ public class ExportController {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Cabin Requests");
 
-        // Add header row
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"Request ID", "Cabin ID", "User ID", "Purpose", "Office ID",
+        String[] headers = {"Request ID", "Cabin ID","Cabin Name", "User ID", "Purpose", "Office Location",
                 "Valid From", "Valid Till", "Start Date", "End Date",
                 "Booking Validity", "Status"};
         for (int i = 0; i < headers.length; i++) {
@@ -37,29 +38,28 @@ public class ExportController {
             cell.setCellStyle(getHeaderCellStyle(workbook));
         }
 
-        // Populate data rows
         int rowNum = 1;
         for (CabinRequest request : bookingRequests) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(request.getRequestId());
             row.createCell(1).setCellValue(request.getCabinId());
-            row.createCell(2).setCellValue(request.getUserId());
-            row.createCell(3).setCellValue(request.getPurpose());
-            row.createCell(4).setCellValue(request.getOfficeId());
-            row.createCell(5).setCellValue(request.getValidFrom().toString());
-            row.createCell(6).setCellValue(request.getValidTill().toString());
-            row.createCell(7).setCellValue(convertDate(request.getStartDate()));
-            row.createCell(8).setCellValue(convertDate(request.getEndDate()));
-            row.createCell(9).setCellValue(request.getBookingValadity().toString());
-            row.createCell(10).setCellValue(request.getStatus().toString());
+            row.createCell(2).setCellValue(request.getCabinName());
+            row.createCell(3).setCellValue(request.getUserId());
+            row.createCell(4).setCellValue(request.getPurpose());
+            row.createCell(5).setCellValue(request.getOfficeId());
+            row.createCell(6).setCellValue(convertTime(request.getValidFrom()));
+            row.createCell(7).setCellValue(convertTime(request.getValidTill()));
+            row.createCell(8).setCellValue(convertDate(request.getStartDate()));
+            row.createCell(9).setCellValue(convertDate(request.getEndDate()));
+            row.createCell(10).setCellValue(request.getBookingValadity().toString());
+            row.createCell(11).setCellValue(request.getStatus().toString());
         }
 
-        // Auto-size all columns
+
         for (int i = 0; i < headers.length; i++) {
-            sheet.autoSizeColumn(i); // Adjusts the column width to fit the content
+            sheet.autoSizeColumn(i);
         }
 
-        // Write workbook to byte array
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
@@ -77,9 +77,8 @@ public class ExportController {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Bookings");
 
-            // Add headers
             Row header = sheet.createRow(0);
-            String[] columns = {"Booking ID", "Cabin ID", "User ID", "Purpose", "Office ID",
+            String[] columns = {"Booking ID", "Cabin ID","Cabin Name", "User ID", "Purpose", "Office ID",
                     "Valid From", "Valid Till", "Start Date", "End Date"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = header.createCell(i);
@@ -91,21 +90,20 @@ public class ExportController {
                 Row row = sheet.createRow(rowIdx++);
                 row.createCell(0).setCellValue(booking.getBookingId());
                 row.createCell(1).setCellValue(booking.getCabinId());
-                row.createCell(2).setCellValue(booking.getUserId());
-                row.createCell(3).setCellValue(booking.getPurpose());
-                row.createCell(4).setCellValue(booking.getOfficeId());
-                row.createCell(5).setCellValue(booking.getValidFrom().toString());
-                row.createCell(6).setCellValue(booking.getValidTill().toString());
-                row.createCell(7).setCellValue(convertDate(booking.getStartDate()));
-                row.createCell(8).setCellValue(convertDate(booking.getEndDate()));
+                row.createCell(2).setCellValue(booking.getCabinName());
+                row.createCell(3).setCellValue(booking.getUserId());
+                row.createCell(4).setCellValue(booking.getPurpose());
+                row.createCell(5).setCellValue(booking.getOfficeId());
+                row.createCell(6).setCellValue(convertTime(booking.getValidFrom()));
+                row.createCell(7).setCellValue(convertTime(booking.getValidTill()));
+                row.createCell(8).setCellValue(convertDate(booking.getStartDate()));
+                row.createCell(9).setCellValue(convertDate(booking.getEndDate()));
             }
 
-            // Adjust column widths
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            // Write workbook to byte array
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
 
@@ -137,5 +135,14 @@ public class ExportController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String formattedDate = dateFormat.format(date);
         return formattedDate;
+    }
+
+    private  String convertTime(LocalTime time)
+    {
+        if (time == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a"); // 12-hour format with AM/PM
+        return time.format(formatter);
     }
 }

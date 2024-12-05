@@ -9,6 +9,7 @@ public class ApiRequestModel {
     private User user;
     private String officeId;
 
+
     public ApiRequestModel(String token, User user, String officeId) {
         this.token = token;
         this.user = user;
@@ -41,4 +42,6 @@ public class ApiRequestModel {
     public void setOfficeId(String officeId) {
         this.officeId = officeId;
     }
+
+
 }

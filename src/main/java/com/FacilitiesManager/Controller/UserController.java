@@ -2,10 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
-import com.FacilitiesManager.Entity.Model.ApiRequestBookingViewModel;
-import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
-import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
-import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
@@ -101,6 +98,21 @@ public class UserController {
       if(validateAccess)
       {
           apiResponseModel=userService.getAllCabinView(apiRequestBookingViewModel);
+          return apiResponseModel;
+      }else {
+          return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+      }
+  }
+
+  @PostMapping ("/officeList")
+  public  ApiResponseModel getOfficeList(@RequestBody ApiRequestModel apiRequestModel)
+  {
+      System.out.println("User:"+apiRequestModel.getUser());
+      boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestModel.getUser(),apiRequestModel.getToken(),accessRole);
+      ApiResponseModel apiResponseModel;
+      if(validateAccess)
+      {
+          apiResponseModel=userService.findAllOffice();
           return apiResponseModel;
       }else {
           return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");

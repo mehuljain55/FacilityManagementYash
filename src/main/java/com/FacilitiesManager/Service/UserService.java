@@ -1,14 +1,11 @@
 package com.FacilitiesManager.Service;
 
 
-import com.FacilitiesManager.Entity.Bookings;
-import com.FacilitiesManager.Entity.Cabin;
-import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.*;
-import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,9 @@ public class UserService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private OfficeRepository officeRepository;
 
     public ApiResponseModel getUserApprovalList(String userId)
     {
@@ -116,6 +116,18 @@ public class UserService {
            }else {
                return new ApiResponseModel<>(StatusResponse.success, cabinModelList, "Cabin Avaliablility");
            }
+    }
+
+    public ApiResponseModel findAllOffice()
+    {
+        List<Office> officeList=officeRepository.findAll();
+        List<String> offices=new ArrayList<>();
+        for(Office office:officeList)
+        {
+            String officeId=office.getOfficeId();
+            offices.add(officeId);
+        }
+        return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
     }
 
 

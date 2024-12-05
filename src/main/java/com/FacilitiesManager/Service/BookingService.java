@@ -85,6 +85,7 @@ public class BookingService {
                 {
                     Cabin cabin=opt1.get();
                     bookings.setCabinId(cabinRequestApproval.getCabinId());
+                    bookings.setCabinName(cabin.getCabinName());
                     bookings.setPurpose(cabinRequest.getPurpose());
                     bookings.setUserId(cabinRequest.getUserId());
                     bookings.setOfficeId(cabin.getOfficeId());
@@ -105,6 +106,7 @@ public class BookingService {
                         BookingModel bookingModel=new BookingModel();
                         bookingModel.setBookingId(bookingRequest.getBookingId());
                         bookingModel.setDate(date);
+                        bookingModel.setCabinName(cabin.getCabinName());
                         bookingModel.setCabinId(bookingRequest.getCabinId());
                         bookingModel.setPurpose(cabinRequest.getPurpose());
                         bookingModel.setUserId(cabinRequest.getUserId());
@@ -200,12 +202,11 @@ public class BookingService {
         CabinRequest cabinRequest = apiRequestCabinModifyModel.getCabinRequest();
 
         if(apiRequestCabinModifyModel.getUserCabinModifyModel()!=null) {
+            userCabinModifyModel=apiRequestCabinModifyModel.getUserCabinModifyModel();
             System.out.println("Booking id:"+userCabinModifyModel.getBookingId());
             Optional<Bookings> optionalBookings = bookingRepository.findById(userCabinModifyModel.getBookingId());
             Bookings bookings = optionalBookings.get();
             List<BookingModel> bookingModelList = bookingModelRepository.findByBookingId(bookings.getBookingId());
-            Optional<Cabin> optionalCabin = cabinRepository.findById(userCabinModifyModel.getNewCabinId());
-            Cabin cabin = optionalCabin.get();
 
             userCabinModifyModel= apiRequestCabinModifyModel.getUserCabinModifyModel();
             if (userCabinModifyModel.getStatus().equals(BookingStatus.cancelled)) {
@@ -216,6 +217,9 @@ public class BookingService {
                     bookingModelRepository.save(bookingModel);
                 }
             } else {
+                Optional<Cabin> optionalCabin = cabinRepository.findById(userCabinModifyModel.getNewCabinId());
+                Cabin cabin = optionalCabin.get();
+
                 bookings.setCabinId(userCabinModifyModel.getNewCabinId());
                 bookings.setCabinName(cabin.getCabinName());
                 bookingRepository.save(bookings);

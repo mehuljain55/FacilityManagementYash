@@ -114,6 +114,20 @@ public class BookingController {
     @PostMapping("/createVipBooking")
     public  ApiResponseModel createAdminBooking(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
     {
+        System.out.println("User Details:"+apiRequestCabinModifyModel.getUser().getEmailId());
+        boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=bookingService.createVipBooking(apiRequestCabinModifyModel);
+            return  apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
+    @PostMapping("/createReservation")
+    public  ApiResponseModel createReservationCabin(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
+    {
         System.out.println(apiRequestCabinModifyModel);
         boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
         if(validateAccess)
