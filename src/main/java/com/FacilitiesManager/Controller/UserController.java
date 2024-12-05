@@ -45,7 +45,6 @@ public class UserController {
     @GetMapping ("/validate_token")
     public ApiResponseModel validateUserToken(@RequestParam("userId") String userId,@RequestParam("token") String token)
     {
-        System.out.println("Create Booking");
         boolean status=userAuthorizationService.validateUserToken(userId,token);
         ApiResponseModel apiResponseModel;
         if(status)
@@ -63,7 +62,6 @@ public class UserController {
 
     @PostMapping("/createBooking")
     public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel) throws MessagingException {
-        System.out.println("Create Booking");
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
         ApiResponseModel apiResponseModel;
         if(validateAccess)
@@ -78,7 +76,7 @@ public class UserController {
     @PostMapping("/viewRequest")
   public  ApiResponseModel viewUserBookingRequest(@RequestBody ApiRequestViewModel requestViewModel)
   {
-      System.out.println("View Request");
+
       boolean validateAccess=userAuthorizationService.validateUserAccess(requestViewModel.getUser(),requestViewModel.getToken(),accessRole);
       ApiResponseModel apiResponseModel;
       if(validateAccess)
@@ -94,7 +92,6 @@ public class UserController {
   @PostMapping("/allBookingRequestByOfficeId")
   public  ApiResponseModel getBookingList(@RequestBody ApiRequestBookingViewModel apiRequestBookingViewModel)
   {
-      System.out.println("Booking List:"+apiRequestBookingViewModel.getUser());
       boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestBookingViewModel.getUser(),apiRequestBookingViewModel.getToken(),accessRole);
       ApiResponseModel apiResponseModel;
       if(validateAccess)
@@ -109,7 +106,6 @@ public class UserController {
   @PostMapping ("/officeList")
   public  ApiResponseModel getOfficeList(@RequestBody ApiRequestModel apiRequestModel)
   {
-      System.out.println("Office List:"+apiRequestModel.getUser());
       boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestModel.getUser(),apiRequestModel.getToken(),accessRole);
       ApiResponseModel apiResponseModel;
       if(validateAccess)
