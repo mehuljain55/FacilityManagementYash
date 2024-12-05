@@ -1,10 +1,11 @@
 package com.FacilitiesManager.Entity.Enums;
 
-public enum CabinAvaiability {
-    Avaliable,
+public enum  CabinAvaiability {
+    Available,
+
     Not_Available,
     Booked,
     Requested,
-    RESERVED,
+    Reserved,
 
 }

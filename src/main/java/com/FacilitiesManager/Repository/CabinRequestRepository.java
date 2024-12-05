@@ -24,7 +24,13 @@ public interface CabinRequestRepository extends JpaRepository<CabinRequest,Integ
     @Query("select c from CabinRequest c where c.officeId=:officeId")
     List<CabinRequest> findCabinRequestByOffice(@Param("officeId") String officeId);
 
-    
+    @Query("SELECT c FROM CabinRequest c WHERE c.status = :status AND c.officeId = :officeId AND c.requestDate BETWEEN :startDate AND :endDate")
+    List<CabinRequest> findCabinRequestByOfficeIdAndDateRange(
+            @Param("status") BookingStatus status,
+            @Param("officeId") String officeId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
 
 
 }

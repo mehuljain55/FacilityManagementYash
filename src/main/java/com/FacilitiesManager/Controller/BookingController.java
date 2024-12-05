@@ -60,6 +60,19 @@ public class BookingController {
         }
     }
 
+    @PostMapping("/viewRequestByDate")
+    public  ApiResponseModel viewBookingRequestByDate(@RequestBody ApiRequestViewModel bookingRequest)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=cabinRequestService.getAllCabinHoldRequestDate(bookingRequest.getUser(),bookingRequest.getStartDate(),bookingRequest.getEndDate());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
+
     @PostMapping("/cancelRequest")
     public  ApiResponseModel cancelBookingRequest(@RequestBody ApiRequestBooking bookingRequest) throws MessagingException {
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingRequest.getUser(),bookingRequest.getToken(),accessRole);

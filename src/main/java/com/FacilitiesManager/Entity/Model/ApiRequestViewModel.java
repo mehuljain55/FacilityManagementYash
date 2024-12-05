@@ -5,12 +5,16 @@ import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.User;
 import jakarta.persistence.Enumerated;
 
+import java.util.Date;
+
 public class ApiRequestViewModel {
 
     private String token;
     private User user;
     private BookingStatus status;
     private String officeId;
+    private Date startDate;
+    private Date endDate;
 
     public ApiRequestViewModel(String token, User user, String officeId) {
         this.token = token;
@@ -51,5 +55,21 @@ public class ApiRequestViewModel {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
