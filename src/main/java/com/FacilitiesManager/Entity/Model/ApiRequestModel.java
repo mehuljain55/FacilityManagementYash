@@ -1,6 +1,7 @@
 package com.FacilitiesManager.Entity.Model;
 
 import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.User;
 
 public class ApiRequestModel {
@@ -8,6 +9,7 @@ public class ApiRequestModel {
     private String token;
     private User user;
     private String officeId;
+    private AccessRole accessRole;
 
 
     public ApiRequestModel(String token, User user, String officeId) {
@@ -43,5 +45,11 @@ public class ApiRequestModel {
         this.officeId = officeId;
     }
 
+    public AccessRole getAccessRole() {
+        return accessRole;
+    }
 
+    public void setAccessRole(AccessRole accessRole) {
+        this.accessRole = accessRole;
+    }
 }

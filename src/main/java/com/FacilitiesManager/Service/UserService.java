@@ -132,6 +132,39 @@ public class UserService {
         return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
     }
 
+    public ApiResponseModel findAllUserByOffice(ApiRequestModel apiRequestModel)
+    {
+        List<User> userList=userRepo.findUserByRoleAndOfficeId(apiRequestModel.getAccessRole(),apiRequestModel.getOfficeId());
+       if(userList!=null && userList.size()>0) {
+           return new ApiResponseModel(StatusResponse.success, userList, "User list");
+       }else {
+           return new ApiResponseModel(StatusResponse.not_found, userList, "No user found");
+
+       }
+
+    }
+
+    public ApiResponseModel updateUserDetail(UserRequestModel userRequestModel)
+    {
+        try {
+            List<User> userList = userRequestModel.getUserList();
+            for (User userRequest : userList) {
+                Optional<User> optionalUser = userRepo.findById(userRequest.getEmailId());
+                User user = optionalUser.get();
+                user.setOfficeId(userRequest.getOfficeId());
+                user.setRole(userRequest.getRole());
+                user.setStatus(userRequest.getStatus());
+                userRepo.save(user);
+            }
+            return  new ApiResponseModel<>(StatusResponse.success,null,"User detail updated");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return  new ApiResponseModel<>(StatusResponse.failed,null,"Unable to update user");
+        }
+    }
+
+
 
 
 }
