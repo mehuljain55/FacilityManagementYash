@@ -18,6 +18,7 @@ public class OfficeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
     private BookingReminderService bookingReminderService;
 
     @GetMapping("/officeList")
@@ -26,9 +27,4 @@ public class OfficeController {
         return userService.findAllOffice();
     }
 
-    @GetMapping("/getBookings")
-    public String bookingMail() throws MessagingException {
-        bookingReminderService.bookingRemainderMail();
-        return "Success";
-    }
 }

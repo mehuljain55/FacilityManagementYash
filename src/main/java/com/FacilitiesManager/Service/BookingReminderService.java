@@ -6,10 +6,12 @@ import com.FacilitiesManager.Repository.BookingRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class BookingReminderService {
 
     @Autowired
@@ -21,7 +23,7 @@ public class BookingReminderService {
     @Scheduled(cron = "0 0/15 9-23 * * *")
     public void bookingRemainderMail() throws MessagingException {
         List<Bookings> bookings=bookingRepository.findBookingsExpiringSoon(new Date(), BookingStatus.approved);
-
+        System.out.println(bookings.size());
         for(Bookings booking:bookings)
         {
             System.out.println("Bookings: "+booking);
