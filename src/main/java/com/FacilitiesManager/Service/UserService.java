@@ -1,18 +1,14 @@
 package com.FacilitiesManager.Service;
 
 
-import com.FacilitiesManager.Entity.Bookings;
-import com.FacilitiesManager.Entity.Cabin;
-import com.FacilitiesManager.Entity.CabinRequest;
+import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.*;
-import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +32,9 @@ public class UserService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private OfficeRepository officeRepository;
 
     public ApiResponseModel getUserApprovalList(String userId)
     {
@@ -89,8 +88,10 @@ public class UserService {
        int todaysBooking=(bookingModelRepository.findBookingsMultipleDaysBetweenDates(new Date(),new Date(),officeId)).size();
         DashboardModel dashboardModel=new DashboardModel();
         dashboardModel.setCabinRequestHold(cabinRequestHold);
-        dashboardModel.setUserRequestApproved(cabinRequestApproved);
         dashboardModel.setCabinRequestRejected(cabinRequestRejected);
+        dashboardModel.setCabinRequestApproved(cabinRequestApproved);
+
+        dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setUserRequestPending(userRequestPending);
         dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setTodaysCabinBooking(todaysBooking);
@@ -118,6 +119,47 @@ public class UserService {
            }
     }
 
+    public ApiResponseModel findAllOffice()
+    {
+        List<Office> officeList=officeRepository.findAll();
+        List<String> offices=new ArrayList<>();
+        for(Office office:officeList)
+        {
+            String officeId=office.getOfficeId();
+            offices.add(officeId);
+        }
+        return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
+    }
 
+    public ApiResponseModel findAllUserByOffice(ApiRequestModel apiRequestModel)
+    {
+        List<User> userList=userRepo.findUserByRoleAndOfficeId(apiRequestModel.getAccessRole(),apiRequestModel.getOfficeId());
+       if(userList!=null && userList.size()>0) {
+           return new ApiResponseModel(StatusResponse.success, userList, "User list");
+       }else {
+           return new ApiResponseModel(StatusResponse.not_found, userList, "No user found");
 
+       }
+
+    }
+
+    public ApiResponseModel updateUserDetail(UserRequestModel userRequestModel)
+    {
+        try {
+            List<User> userList = userRequestModel.getUserList();
+            for (User userRequest : userList) {
+                Optional<User> optionalUser = userRepo.findById(userRequest.getEmailId());
+                User user = optionalUser.get();
+                user.setOfficeId(userRequest.getOfficeId());
+                user.setRole(userRequest.getRole());
+                user.setStatus(userRequest.getStatus());
+                userRepo.save(user);
+            }
+            return  new ApiResponseModel<>(StatusResponse.success,null,"User detail updated");
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return  new ApiResponseModel<>(StatusResponse.failed,null,"Unable to update user");
+        }
+    }
 }

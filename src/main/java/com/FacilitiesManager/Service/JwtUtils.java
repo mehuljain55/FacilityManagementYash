@@ -50,7 +50,7 @@ public class JwtUtils {
         try {
             Claims claims = validateToken(token);
             String emailId = claims.getSubject();
-            return (emailId.equals(user.getEmailId()) && access_role.equals(user.getRole()));
+            return (emailId.equals(user.getEmailId()) && (access_role.equals(user.getRole())) || user.getRole().equals(AccessRole.super_admin));
         } catch (JwtException e) {
             return false;
         }

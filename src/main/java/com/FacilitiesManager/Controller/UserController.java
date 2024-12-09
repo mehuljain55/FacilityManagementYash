@@ -2,10 +2,7 @@ package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
-import com.FacilitiesManager.Entity.Model.ApiRequestBookingViewModel;
-import com.FacilitiesManager.Entity.Model.ApiRequestModelBooking;
-import com.FacilitiesManager.Entity.Model.ApiRequestViewModel;
-import com.FacilitiesManager.Entity.Model.ApiResponseModel;
+import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Entity.User;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
@@ -48,7 +45,6 @@ public class UserController {
     @GetMapping ("/validate_token")
     public ApiResponseModel validateUserToken(@RequestParam("userId") String userId,@RequestParam("token") String token)
     {
-
         boolean status=userAuthorizationService.validateUserToken(userId,token);
         ApiResponseModel apiResponseModel;
         if(status)
@@ -66,7 +62,6 @@ public class UserController {
 
     @PostMapping("/createBooking")
     public ApiResponseModel createCabinBookingRequest(@RequestBody ApiRequestModelBooking bookingModel) throws MessagingException {
-
         boolean validateAccess=userAuthorizationService.validateUserAccess(bookingModel.getUser(),bookingModel.getToken(),accessRole);
         ApiResponseModel apiResponseModel;
         if(validateAccess)
@@ -81,6 +76,7 @@ public class UserController {
     @PostMapping("/viewRequest")
   public  ApiResponseModel viewUserBookingRequest(@RequestBody ApiRequestViewModel requestViewModel)
   {
+
       boolean validateAccess=userAuthorizationService.validateUserAccess(requestViewModel.getUser(),requestViewModel.getToken(),accessRole);
       ApiResponseModel apiResponseModel;
       if(validateAccess)
@@ -106,6 +102,22 @@ public class UserController {
           return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
       }
   }
+
+  @PostMapping ("/officeList")
+  public  ApiResponseModel getOfficeList(@RequestBody ApiRequestModel apiRequestModel)
+  {
+      boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestModel.getUser(),apiRequestModel.getToken(),accessRole);
+      ApiResponseModel apiResponseModel;
+      if(validateAccess)
+      {
+          apiResponseModel=userService.findAllOffice();
+          return apiResponseModel;
+      }else {
+          return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+      }
+  }
+
+
 
 
 }

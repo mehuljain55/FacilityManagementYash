@@ -13,17 +13,16 @@ public class ReservationList {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int reservationId;
     private int cabinId;
-    private String userId;
+    private String cabinName;
     private Date date;
     private LocalTime validFrom;
     private LocalTime validTill;
     private String officeId;
     private BookingStatus status;
 
-    public ReservationList(int reservationId, int cabinId, String userId, Date date, LocalTime validFrom, LocalTime validTill) {
+    public ReservationList(int reservationId, int cabinId, Date date, LocalTime validFrom, LocalTime validTill) {
         this.reservationId = reservationId;
         this.cabinId = cabinId;
-        this.userId = userId;
         this.date = date;
         this.validFrom = validFrom;
         this.validTill = validTill;
@@ -48,13 +47,7 @@ public class ReservationList {
         this.cabinId = cabinId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
     public Date getDate() {
         return date;
@@ -94,5 +87,13 @@ public class ReservationList {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public String getCabinName() {
+        return cabinName;
+    }
+
+    public void setCabinName(String cabinName) {
+        this.cabinName = cabinName;
     }
 }

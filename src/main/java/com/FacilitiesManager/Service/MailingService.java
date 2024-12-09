@@ -1,5 +1,6 @@
 package com.FacilitiesManager.Service;
 
+import com.FacilitiesManager.Entity.Bookings;
 import com.FacilitiesManager.Entity.CabinRequest;
 import com.FacilitiesManager.Entity.User;
 import jakarta.mail.MessagingException;
@@ -10,6 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
@@ -66,11 +68,6 @@ public class MailingService {
         helper.setSubject(subject);
         helper.setText(createCustomTemplate(body), true); // Use custom template
         helper.setFrom("Yash Technologies <noreply.yashtechnologies@gmail.com>");
-
-
-
-
-
         mailSender.send(message);
         System.out.println("Mail sent to: " + String.join(", ", to));
     }
@@ -170,6 +167,95 @@ public class MailingService {
         );
     }
 
+    public String bookingCancellationMail(Bookings bookingRequest, String reason) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
+
+        String startDateFormatted = dateFormatter.format(bookingRequest.getStartDate());
+        String endDateFormatted = dateFormatter.format(bookingRequest.getEndDate());
+
+        return """
+    <html>
+        <body>
+            <h2 style="color: #007bff;">Cabin Cancellation Notification</h2>
+            <p style="font-size: 14px;">
+                The following cabin booking has been canceled:
+            </p>
+            <table style="width: 100%%; border-collapse: collapse; font-size: 14px;">
+                <tr>
+                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Field</th>
+                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Value</th>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Request ID</td>
+                    <td style="padding: 8px;">%d</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Cabin ID</td>
+                    <td style="padding: 8px;">%d</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Cabin Name</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">User ID</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Purpose</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Office ID</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Start Date</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">End Date</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Valid From</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Valid Till</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Status</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Reason</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+            </table>
+            <footer style="margin-top: 20px; font-size: 12px; color: #555;">
+                <p>Best Regards,<br>Yash Technologies</p>
+            </footer>
+        </body>
+    </html>
+    """.formatted(
+                bookingRequest.getBookingId(),
+                bookingRequest.getCabinId(),
+                bookingRequest.getCabinName(),
+                bookingRequest.getUserId(),
+                bookingRequest.getPurpose(),
+                bookingRequest.getOfficeId(),
+                startDateFormatted,
+                endDateFormatted,
+                bookingRequest.getValidFrom(),
+                bookingRequest.getValidTill(),
+                bookingRequest.getStatus(),
+                reason
+        );
+    }
+
+
     public String userRequest(User user) {
         return """
         <html>
@@ -265,7 +351,7 @@ public class MailingService {
             </body>
         </html>
         """.formatted(
-                cabinRequest.getUserId(), // User's name or ID
+                cabinRequest.getUserId(),
                 cabinRequest.getRequestId(),
                 cabinRequest.getCabinName(),
                 cabinRequest.getPurpose(),
@@ -275,6 +361,96 @@ public class MailingService {
                 cabinRequest.getValidTill()
         );
     }
+
+    public String bookingModificationMail(Bookings bookingRequest, String modificationReason) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
+
+        String startDateFormatted = dateFormatter.format(bookingRequest.getStartDate());
+        String endDateFormatted = dateFormatter.format(bookingRequest.getEndDate());
+
+        return """
+    <html>
+        <body>
+            <h2 style="color: #007bff;">Cabin Booking Modification Notification</h2>
+            <p style="font-size: 14px;">
+                The following cabin booking has been modified:
+            </p>
+            <table style="width: 100%%; border-collapse: collapse; font-size: 14px;">
+                <tr>
+                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Field</th>
+                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Value</th>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Request ID</td>
+                    <td style="padding: 8px;">%d</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Cabin ID</td>
+                    <td style="padding: 8px;">%d</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Cabin Name</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">User ID</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Purpose</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Office ID</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Start Date</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">End Date</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Valid From</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Valid Till</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 8px;">Status</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Modification Reason</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+            </table>
+            <footer style="margin-top: 20px; font-size: 12px; color: #555;">
+                <p>Best Regards,<br>Yash Technologies</p>
+            </footer>
+        </body>
+    </html>
+    """.formatted(
+                bookingRequest.getBookingId(),
+                bookingRequest.getCabinId(),
+                bookingRequest.getCabinName(),
+                bookingRequest.getUserId(),
+                bookingRequest.getPurpose(),
+                bookingRequest.getOfficeId(),
+                startDateFormatted,
+                endDateFormatted,
+                bookingRequest.getValidFrom(),
+                bookingRequest.getValidTill(),
+                bookingRequest.getStatus(),
+                modificationReason
+        );
+    }
+
 
 
     public String createRejectionMail(CabinRequest cabinRequest) {

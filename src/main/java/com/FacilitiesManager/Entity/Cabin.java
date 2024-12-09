@@ -69,4 +69,12 @@ public class Cabin {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+    public BookingValadity getBookingType() {
+        return bookingType;
+    }
+
+    public void setBookingType(BookingValadity bookingType) {
+        this.bookingType = bookingType;
+    }
 }

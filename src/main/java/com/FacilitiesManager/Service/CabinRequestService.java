@@ -6,6 +6,7 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.*;
 import jakarta.mail.MessagingException;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +45,6 @@ public class CabinRequestService {
     private MailingService mailingService;
 
 
-
     public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user) throws MessagingException {
         boolean isCabinAvailable;
 
@@ -66,10 +66,10 @@ public class CabinRequestService {
             if(isCabinAvailable)
             {
                 List<Date> dates=getDatesBetween(cabinRequest.getStartDate(),cabinRequest.getEndDate());
-
                 cabinRequest.setStatus(BookingStatus.hold);
                 cabinRequest.setUserId(user.getEmailId());
                 cabinRequest.setCabinName(cabin.getCabinName());
+                cabinRequest.setRequestDate(new Date());
                 CabinRequest cabinRequestUser= cabinRequestRepository.save(cabinRequest);
                 for(Date date:dates)
                 {
@@ -159,6 +159,7 @@ public class CabinRequestService {
         {
             return new ApiResponseModel<>(StatusResponse.not_found,null,"No Cabin found");
         }
+
         if(bookings!=null)
         {
             for(Cabin cabin:cabins)
@@ -171,7 +172,7 @@ public class CabinRequestService {
                                 .filter(c -> c.getCabinId() == cabin.getCabinId())  // Filter by cabinId
                                 .count();
                         if(requestCount<=1&& cabinAvaliableModel.getBookingType().equals("Allotment")) {
-                            cabin.setStatus(CabinAvaiability.Avaliable);
+                            cabin.setStatus(CabinAvaiability.Available);
                             cabin.setMsg("Available");
                         }else {
                             cabin.setStatus(CabinAvaiability.Requested);
@@ -193,20 +194,24 @@ public class CabinRequestService {
                 {
                     if(cabin.getCabinId()==reservation.getCabinId())
                     {
-                        cabin.setStatus(CabinAvaiability.RESERVED);
+                        cabin.setStatus(CabinAvaiability.Reserved);
                         cabin.setMsg("Cabin Reserved");
                     }
                 }
 
-                if(cabin.getStatus()==null)
+                if(cabin.getStatus()==null|| cabin.getStatus().equals(CabinAvaiability.Available))
                 {
-                    cabin.setStatus(CabinAvaiability.Avaliable);
+                    cabin.setStatus(CabinAvaiability.Available);
                     cabin.setMsg("Available");
                 }
 
+                if(cabin.getStatus().equals(CabinAvaiability.Reserved))
+                {
+                    cabin.setStatus(CabinAvaiability.Reserved);
+                    cabin.setMsg("Cabin Reserved");
+                }
+
                 cabinList.add(cabin);
-
-
             }
             return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
         }
@@ -240,6 +245,8 @@ public class CabinRequestService {
                 Cabin cabin = opt.get();
                 cabin.setCabinName(cabin.getCabinName());
                 cabin.setCapacity(cabinRequest.getCapacity());
+                cabin.setBookingType(cabinRequest.getBookingType());
+                cabin.setStatus(cabinRequest.getStatus());
                 cabinRepository.save(cabin);
             }
             return new ApiResponseModel<>(StatusResponse.success, null, "Cabin updated");
@@ -261,7 +268,52 @@ public class CabinRequestService {
             {
                 boolean isCabinAvailable;
                 boolean avability;
-                CabinAvaiability cabinAvaiability=CabinAvaiability.Avaliable;
+                CabinAvaiability cabinAvaiability=CabinAvaiability.Available;
+                if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
+                {
+                    isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
+                    avability=bookingService.checkCabinRequestSingleDay(cabinRequest);
+
+
+                }else{
+                    isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
+                    avability=bookingService.checkCabinRequestMultipleDay(cabinRequest);
+                }
+
+
+                if(!isCabinAvailable)
+                {
+                    cabinAvaiability=CabinAvaiability.Booked;
+                }
+
+                else if(!avability)
+                {
+                    cabinAvaiability=CabinAvaiability.Requested;
+                }
+
+
+                cabinRequest.setCabinAvaiability(cabinAvaiability);
+                cabinRequestList.add(cabinRequest);
+            }
+            System.out.println("Cabin Request List Size:"+cabinRequestList.size());
+            return new ApiResponseModel<>(StatusResponse.success,cabinRequestList,"Cabin Request List");
+        }
+        else {
+            return new ApiResponseModel<>(StatusResponse.not_found, null, "No request on hold");
+        }
+    }
+
+    public ApiResponseModel getAllCabinHoldRequestDate(User user,Date startDate,Date endDate)
+    {
+        List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeIdAndDateRange(BookingStatus.hold, user.getOfficeId(),startDate,endDate);
+        List<CabinRequest> cabinRequestList=new ArrayList<>();
+        if(cabinRequests!=null)
+        {
+            for(CabinRequest cabinRequest:cabinRequests)
+            {
+                boolean isCabinAvailable;
+                boolean avability;
+                CabinAvaiability cabinAvaiability=CabinAvaiability.Available;
                 if(cabinRequest.getBookingValadity().equals(BookingValadity.single_day))
                 {
                     isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
@@ -313,6 +365,36 @@ public class CabinRequestService {
         else {
             return new ApiResponseModel<>(StatusResponse.not_found, null, "No Cabin request");
         }
+    }
+
+    public ApiResponseModel createCabinReservation(CabinRequest cabinRequest,User userRequest)
+    {
+        try {
+
+
+            Optional<Cabin> optionalCabin = cabinRepository.findById(cabinRequest.getCabinId());
+            Cabin cabin = optionalCabin.get();
+            Optional<User> optionalUser = userRepo.findById(userRequest.getEmailId());
+            User user = optionalUser.get();
+
+            ReservationList reservationList = new ReservationList();
+            reservationList.setCabinId(cabinRequest.getCabinId());
+            reservationList.setCabinName(cabin.getCabinName());
+            reservationList.setDate(cabinRequest.getStartDate());
+            reservationList.setValidFrom(cabinRequest.getValidFrom());
+            reservationList.setValidTill(cabinRequest.getValidTill());
+            reservationList.setOfficeId(user.getOfficeId());
+            reservationList.setStatus(BookingStatus.approved);
+            reservationRepo.save(reservationList);
+            return new ApiResponseModel<>(StatusResponse.success,null,"Cabin reserved");
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to reserve cabin");
+
+        }
+
     }
 
     public ApiResponseModel getCabinRequestByUser(User user)
