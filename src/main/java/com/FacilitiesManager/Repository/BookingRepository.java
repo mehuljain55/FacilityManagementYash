@@ -22,4 +22,10 @@ public interface BookingRepository extends JpaRepository<Bookings,Integer> {
                                                 @Param("cabinId") int cabinId,
                                                 @Param("status") BookingStatus status);
 
+    @Query("SELECT b FROM Bookings b WHERE b.status = :status" +
+            " AND FUNCTION('TIMESTAMPDIFF', MINUTE, CURRENT_TIMESTAMP, b.validTill) BETWEEN 0 AND 15"+
+            " AND b.endDate=:date")
+    List<Bookings> findBookingsExpiringSoon(@Param("date") Date date,
+                                            @Param("status") BookingStatus status);
+
 }

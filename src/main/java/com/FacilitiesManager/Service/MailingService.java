@@ -56,11 +56,29 @@ public class MailingService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         if (to != null && !to.isEmpty()) {
-            helper.setCc(to.split(","));
+            helper.setTo(to.split(","));
         }
 
         if (cc != null && !cc.isEmpty()) {
-            helper.setTo(cc.toArray(new String[0]));
+            helper.setCc(cc.toArray(new String[0]));
+        } else {
+            throw new IllegalArgumentException("The 'to' field cannot be null or empty.");
+        }
+
+        helper.setSubject(subject);
+        helper.setText(createCustomTemplate(body), true); // Use custom template
+        helper.setFrom("Yash Technologies <noreply.yashtechnologies@gmail.com>");
+        mailSender.send(message);
+        System.out.println("Mail sent to: " + String.join(", ", to));
+    }
+
+    @Async("mailTaskExecutor")
+    public void sendMailIndividual(String to, String subject, String body) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        if (to != null && !to.isEmpty()) {
+            helper.setTo(to.split(","));
         } else {
             throw new IllegalArgumentException("The 'to' field cannot be null or empty.");
         }
