@@ -5,9 +5,9 @@ import com.FacilitiesManager.Entity.User;
 
 public class ApiRequestCabinModifyModel {
 
-    private  String token;
+    private String token;
     private User user;
-    private  UserCabinModifyModel userCabinModifyModel;
+    private UserCabinModifyModel userCabinModifyModel;
     private CabinRequest cabinRequest;
 
     public ApiRequestCabinModifyModel(String token, User user, UserCabinModifyModel userCabinModifyModel, CabinRequest cabinRequest) {

@@ -112,8 +112,7 @@ public class BookingController {
     }
 
     @PostMapping("/createVipBooking")
-    public  ApiResponseModel createAdminBooking(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
-    {
+    public  ApiResponseModel createAdminBooking(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel) throws MessagingException {
         System.out.println("User Details:"+apiRequestCabinModifyModel.getUser().getEmailId());
         boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
         if(validateAccess)
@@ -126,8 +125,7 @@ public class BookingController {
     }
 
     @PostMapping("/createReservation")
-    public  ApiResponseModel createReservationVipCabin(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel)
-    {
+    public  ApiResponseModel createReservationVipCabin(@RequestBody ApiRequestCabinModifyModel apiRequestCabinModifyModel) throws MessagingException {
         System.out.println(apiRequestCabinModifyModel);
         boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestCabinModifyModel.getUser(),apiRequestCabinModifyModel.getToken(),accessRole);
         if(validateAccess)

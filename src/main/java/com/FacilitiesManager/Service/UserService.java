@@ -9,7 +9,6 @@ import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -163,8 +162,4 @@ public class UserService {
             return  new ApiResponseModel<>(StatusResponse.failed,null,"Unable to update user");
         }
     }
-
-
-
-
 }

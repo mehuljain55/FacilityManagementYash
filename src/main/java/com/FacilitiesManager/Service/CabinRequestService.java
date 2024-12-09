@@ -45,7 +45,6 @@ public class CabinRequestService {
     private MailingService mailingService;
 
 
-
     public ApiResponseModel createCabinBookingRequest(CabinRequest cabinRequest, User user) throws MessagingException {
         boolean isCabinAvailable;
 
@@ -67,7 +66,6 @@ public class CabinRequestService {
             if(isCabinAvailable)
             {
                 List<Date> dates=getDatesBetween(cabinRequest.getStartDate(),cabinRequest.getEndDate());
-
                 cabinRequest.setStatus(BookingStatus.hold);
                 cabinRequest.setUserId(user.getEmailId());
                 cabinRequest.setCabinName(cabin.getCabinName());
@@ -213,10 +211,7 @@ public class CabinRequestService {
                     cabin.setMsg("Cabin Reserved");
                 }
 
-
                 cabinList.add(cabin);
-
-
             }
             return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
         }
