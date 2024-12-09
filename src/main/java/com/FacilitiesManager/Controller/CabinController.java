@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cabin")
+@RequestMapping("/api/cabin")
 public class CabinController {
 
     @Autowired

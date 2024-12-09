@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/export")
+@RequestMapping("/api/export")
 public class ExportController {
 
     @PostMapping("/excel")
