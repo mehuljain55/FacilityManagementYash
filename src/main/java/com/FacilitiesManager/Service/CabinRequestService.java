@@ -243,7 +243,7 @@ public class CabinRequestService {
             for (Cabin cabinRequest : cabins) {
                 Optional<Cabin> opt = cabinRepository.findById(cabinRequest.getCabinId());
                 Cabin cabin = opt.get();
-                cabin.setCabinName(cabin.getCabinName());
+                cabin.setCabinName(cabinRequest.getCabinName());
                 cabin.setCapacity(cabinRequest.getCapacity());
                 cabin.setBookingType(cabinRequest.getBookingType());
                 cabin.setStatus(cabinRequest.getStatus());
