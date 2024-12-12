@@ -257,7 +257,6 @@ public class CabinRequestService {
         }
     }
 
-
     public ApiResponseModel getAllCabinHoldRequest(User user)
     {
         List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold, user.getOfficeId());
