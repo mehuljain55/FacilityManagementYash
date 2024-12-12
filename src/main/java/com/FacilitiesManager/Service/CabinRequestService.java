@@ -6,10 +6,9 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.*;
 import jakarta.mail.MessagingException;
-import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.time.LocalTime;
 import java.util.*;
@@ -243,7 +242,7 @@ public class CabinRequestService {
             for (Cabin cabinRequest : cabins) {
                 Optional<Cabin> opt = cabinRepository.findById(cabinRequest.getCabinId());
                 Cabin cabin = opt.get();
-                cabin.setCabinName(cabin.getCabinName());
+                cabin.setCabinName(cabinRequest.getCabinName());
                 cabin.setCapacity(cabinRequest.getCapacity());
                 cabin.setBookingType(cabinRequest.getBookingType());
                 cabin.setStatus(cabinRequest.getStatus());
@@ -420,5 +419,4 @@ public class CabinRequestService {
         }
         return dates;
     }
-
 }
