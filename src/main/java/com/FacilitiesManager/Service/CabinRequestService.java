@@ -244,6 +244,7 @@ public class CabinRequestService {
                 Cabin cabin = opt.get();
                 cabin.setCabinName(cabinRequest.getCabinName());
                 cabin.setCapacity(cabinRequest.getCapacity());
+                cabin.setAppliances(cabinRequest.getAppliances());
                 cabin.setBookingType(cabinRequest.getBookingType());
                 cabin.setStatus(cabinRequest.getStatus());
                 cabinRepository.save(cabin);
