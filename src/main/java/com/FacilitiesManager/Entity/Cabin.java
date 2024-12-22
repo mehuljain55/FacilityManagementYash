@@ -12,6 +12,7 @@ public class Cabin {
     private int cabinId;
     private String cabinName;
     private int capacity;
+    private String appliances;
     private String officeId;
     @Enumerated(EnumType.STRING)
     private BookingValadity bookingType;
@@ -76,5 +77,13 @@ public class Cabin {
 
     public void setBookingType(BookingValadity bookingType) {
         this.bookingType = bookingType;
+    }
+
+    public String getAppliances() {
+        return appliances;
+    }
+
+    public void setAppliances(String appliances) {
+        this.appliances = appliances;
     }
 }
