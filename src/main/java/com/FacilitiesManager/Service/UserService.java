@@ -7,6 +7,7 @@ import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Repository.*;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,64 @@ public class UserService {
             return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized user");
         }
     }
+
+    public ApiResponseModel addOffice(List<Office> offices)
+    {
+         String status="";
+        try {
+            for (Office office : offices) {
+                Optional<Office> officeOptional = officeRepository.findById(office.getOfficeId());
+                if (officeOptional.isPresent()) {
+                    status=status+"Office already present please change office"+office.getOfficeId()+"\n";
+                } else {
+                    officeRepository.save(office);
+                }
+            }
+
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+
+        }finally {
+            if (status.equals(""))
+            {
+                status="Office added";
+            }
+            return new ApiResponseModel<>(StatusResponse.success, null, status);
+
+        }
+    }
+
+    public ApiResponseModel updateOffice(List<Office> offices)
+    {
+        String status="";
+        try {
+
+            for(Office office:offices) {
+                Optional<Office> officeOptional = officeRepository.findById(office.getOfficeId());
+
+                if (officeOptional.isPresent()) {
+                    officeRepository.save(office);
+                } else {
+                   status=status+" office not found "+office.getOfficeId()+"/n";
+
+                }
+            }
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to update office");
+        }finally {
+            if(status.equals(""))
+            {
+                status="Office detail Updated";
+            }
+            return new ApiResponseModel<>(StatusResponse.success, null, status);
+
+        }
+    }
+
 
     public ApiResponseModel userApprovalCancel(String userId)
     {
@@ -129,6 +188,13 @@ public class UserService {
             offices.add(officeId);
         }
         return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
+    }
+
+    public ApiResponseModel getAllOffice()
+    {
+        List<Office> officeList=officeRepository.findAll();
+
+        return new ApiResponseModel(StatusResponse.success,officeList,"OfficeList");
     }
 
     public ApiResponseModel findAllUserByOffice(ApiRequestModel apiRequestModel)
