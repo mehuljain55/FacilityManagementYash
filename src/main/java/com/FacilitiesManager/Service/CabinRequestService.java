@@ -7,10 +7,13 @@ import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Repository.*;
 import jakarta.mail.MessagingException;
 import org.apache.poi.sl.draw.geom.GuideIf;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -418,6 +421,36 @@ public class CabinRequestService {
             calendar.add(Calendar.DATE, 1);
         }
         return dates;
+    }
+
+    public byte[] generateExcel() throws Exception {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Cabin Details");
+
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        Row headerRow = sheet.createRow(0);
+
+        String[] headings = {"Cabin Name", "Capacity", "Appliances", "Booking Validity", "Status"};
+
+        for (int i = 0; i < headings.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headings[i]);
+            cell.setCellStyle(headerCellStyle);
+        }
+
+        for (int i = 0; i < headings.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return outputStream.toByteArray();
     }
 
 }

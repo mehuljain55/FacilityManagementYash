@@ -8,6 +8,9 @@ import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.CabinRequestService;
 import com.FacilitiesManager.Service.UserAuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,9 +38,15 @@ public class CabinController {
         }
     }
 
-
-
-
-
+    @GetMapping("/download/format")
+    public ResponseEntity<byte[]> downloadExcel() throws Exception {
+        byte[] excelBytes = cabinRequestService.generateExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=cabin_details.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(excelBytes);
+    }
 
 }

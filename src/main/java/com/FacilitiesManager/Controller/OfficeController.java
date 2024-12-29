@@ -65,7 +65,4 @@ public class OfficeController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
-
-
-
 }
