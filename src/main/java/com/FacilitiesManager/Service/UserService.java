@@ -2,6 +2,7 @@ package com.FacilitiesManager.Service;
 
 import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
+import com.FacilitiesManager.Entity.Enums.OfficeStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.*;
@@ -73,6 +74,7 @@ public class UserService {
                 if (officeOptional.isPresent()) {
                     status=status+"Office already present please change office"+office.getOfficeId()+"\n";
                 } else {
+                    office.setStatus(OfficeStatus.ACTIVE);
                     officeRepository.save(office);
                 }
             }
@@ -164,6 +166,18 @@ public class UserService {
         }else {
             return new ApiResponseModel<>(StatusResponse.success, cabinModelList, "Cabin Avaliablility");
         }
+    }
+
+    public ApiResponseModel<List<String>> findAllActiveOffice()
+    {
+        List<Office> officeList=officeRepository.findOfficeListByStatus(OfficeStatus.ACTIVE);
+        List<String> offices=new ArrayList<>();
+        for(Office office:officeList)
+        {
+            String officeId=office.getOfficeId();
+            offices.add(officeId);
+        }
+        return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
     }
 
     public ApiResponseModel<List<String>> findAllOffice()

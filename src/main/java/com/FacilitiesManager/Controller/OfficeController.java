@@ -24,11 +24,20 @@ public class OfficeController {
 
 
 
+    @GetMapping("/activeOfficeList")
+    public ApiResponseModel getAllActiveOfficeList()
+    {
+        return userService.findAllActiveOffice();
+    }
+
+
     @GetMapping("/officeList")
     public ApiResponseModel getAllOfficeList()
     {
         return userService.findAllOffice();
     }
+
+
 
     @GetMapping("/findAllOffice")
     public ApiResponseModel getAllOffice()

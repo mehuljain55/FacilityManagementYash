@@ -27,10 +27,9 @@ public class CabinController {
     @Autowired
     private UserAuthorizationService userAuthorizationService;
 
-
     private final AccessRole accessRole=AccessRole.manager;
 
-
+    
     @PostMapping ("/findAvailableCabins")
     public ApiResponseModel<List<Cabin>> getAvailableCabin(@RequestBody ApiRequestModelCabinRequest cabinModel)
     {
