@@ -1,13 +1,11 @@
 package com.FacilitiesManager.Service;
 
-
 import com.FacilitiesManager.Entity.*;
 import com.FacilitiesManager.Entity.Enums.BookingStatus;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Enums.UserApprovalStatus;
 import com.FacilitiesManager.Entity.Model.*;
 import com.FacilitiesManager.Repository.*;
-import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,18 +76,15 @@ public class UserService {
                     officeRepository.save(office);
                 }
             }
-
         }catch(Exception e)
         {
             e.printStackTrace();
-
         }finally {
             if (status.equals(""))
             {
                 status="Office added";
             }
             return new ApiResponseModel<>(StatusResponse.success, null, status);
-
         }
     }
 
@@ -105,24 +100,19 @@ public class UserService {
                     officeRepository.save(office);
                 } else {
                     status=status+" office not found "+office.getOfficeId()+"/n";
-
                 }
             }
-
         }catch (Exception e)
         {
             e.printStackTrace();
-            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to update office");
         }finally {
             if(status.equals(""))
             {
                 status="Office detail Updated";
             }
-            return new ApiResponseModel<>(StatusResponse.success, null, status);
-
         }
+        return new ApiResponseModel<>(StatusResponse.success, null, status);
     }
-
 
     public ApiResponseModel userApprovalCancel(String userId)
     {
@@ -149,13 +139,11 @@ public class UserService {
         dashboardModel.setCabinRequestHold(cabinRequestHold);
         dashboardModel.setCabinRequestRejected(cabinRequestRejected);
         dashboardModel.setCabinRequestApproved(cabinRequestApproved);
-
         dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setUserRequestPending(userRequestPending);
         dashboardModel.setUserRequestApproved(userRequestApproved);
         dashboardModel.setTodaysCabinBooking(todaysBooking);
         return new ApiResponseModel<>(StatusResponse.success,dashboardModel,"Manager dashboard");
-
     }
 
     public  ApiResponseModel getAllCabinView( ApiRequestBookingViewModel apiRequestModel)
@@ -206,7 +194,6 @@ public class UserService {
             return new ApiResponseModel(StatusResponse.not_found, userList, "No user found");
 
         }
-
     }
 
     public ApiResponseModel updateUserDetail(UserRequestModel userRequestModel)

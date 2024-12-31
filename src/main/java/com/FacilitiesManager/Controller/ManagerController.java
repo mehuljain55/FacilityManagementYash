@@ -149,8 +149,4 @@ public class ManagerController {
             return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
         }
     }
-
-
-
-
 }

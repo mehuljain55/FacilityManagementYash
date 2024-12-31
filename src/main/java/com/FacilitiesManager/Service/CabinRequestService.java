@@ -220,12 +220,6 @@ public class CabinRequestService {
         return new ApiResponseModel<>(StatusResponse.success,cabinList,"Available Cabin");
     }
 
-
-
-
-
-
-
     public  ApiResponseModel findAllCabin(String userId)
     {
         Optional<User> opt=userRepo.findById(userId);
@@ -260,7 +254,6 @@ public class CabinRequestService {
         }
     }
 
-
     public ApiResponseModel getAllCabinHoldRequest(User user)
     {
         List<CabinRequest> cabinRequests=cabinRequestRepository.findCabinRequestByOfficeId(BookingStatus.hold, user.getOfficeId());
@@ -276,29 +269,21 @@ public class CabinRequestService {
                 {
                     isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
                     avability=bookingService.checkCabinRequestSingleDay(cabinRequest);
-
-
                 }else{
                     isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
                     avability=bookingService.checkCabinRequestMultipleDay(cabinRequest);
                 }
 
-
                 if(!isCabinAvailable)
                 {
                     cabinAvaiability=CabinAvaiability.Booked;
-                }
-
-                else if(!avability)
+                } else if(!avability)
                 {
                     cabinAvaiability=CabinAvaiability.Requested;
                 }
-
-
                 cabinRequest.setCabinAvaiability(cabinAvaiability);
                 cabinRequestList.add(cabinRequest);
             }
-            System.out.println("Cabin Request List Size:"+cabinRequestList.size());
             return new ApiResponseModel<>(StatusResponse.success,cabinRequestList,"Cabin Request List");
         }
         else {
@@ -321,29 +306,20 @@ public class CabinRequestService {
                 {
                     isCabinAvailable=bookingService.checkCabinAvabalitySingleDay(cabinRequest);
                     avability=bookingService.checkCabinRequestSingleDay(cabinRequest);
-
-
                 }else{
                     isCabinAvailable=bookingService.checkCabinAvailabilityMultipleDay(cabinRequest);
                     avability=bookingService.checkCabinRequestMultipleDay(cabinRequest);
                 }
 
-
                 if(!isCabinAvailable)
                 {
                     cabinAvaiability=CabinAvaiability.Booked;
-                }
-
-                else if(!avability)
-                {
+                } else if(!avability) {
                     cabinAvaiability=CabinAvaiability.Requested;
                 }
-
-
                 cabinRequest.setCabinAvaiability(cabinAvaiability);
                 cabinRequestList.add(cabinRequest);
             }
-            System.out.println("Cabin Request List Size:"+cabinRequestList.size());
             return new ApiResponseModel<>(StatusResponse.success,cabinRequestList,"Cabin Request List");
         }
         else {
@@ -373,8 +349,6 @@ public class CabinRequestService {
     public ApiResponseModel createCabinReservation(CabinRequest cabinRequest,User userRequest)
     {
         try {
-
-
             Optional<Cabin> optionalCabin = cabinRepository.findById(cabinRequest.getCabinId());
             Cabin cabin = optionalCabin.get();
             Optional<User> optionalUser = userRepo.findById(userRequest.getEmailId());
@@ -390,14 +364,11 @@ public class CabinRequestService {
             reservationList.setStatus(BookingStatus.approved);
             reservationRepo.save(reservationList);
             return new ApiResponseModel<>(StatusResponse.success,null,"Cabin reserved");
-
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to reserve cabin");
-
         }
-
     }
 
     public ApiResponseModel getCabinRequestByUser(User user)
@@ -411,6 +382,20 @@ public class CabinRequestService {
             return new ApiResponseModel<>(StatusResponse.not_found,null,"No requests");
         }
     }
+
+    public ApiResponseModel deleteCabin(int cabinId)
+    {
+      Optional<Cabin> optionalCabin=cabinRepository.findById(cabinId);
+        if(optionalCabin.isPresent())
+        {
+            cabinRepository.deleteById(cabinId);
+            return new ApiResponseModel<>(StatusResponse.success,null,"Cabin deleted");
+        }
+        else {
+            return new ApiResponseModel<>(StatusResponse.failed,null,"Unable to delete cabin");
+        }
+    }
+
 
     public static List<Date> getDatesBetween(Date startDate, Date endDate)  {
         List<Date> dates = new ArrayList<>();

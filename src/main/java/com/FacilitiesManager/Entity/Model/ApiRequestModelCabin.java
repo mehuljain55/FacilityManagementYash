@@ -8,6 +8,7 @@ import java.util.List;
 public class ApiRequestModelCabin {
     private String token;
     private User user;
+    private int cabinId;
     private List<Cabin> cabin;
 
     public ApiRequestModelCabin(String token, User user, List<Cabin> cabin) {
@@ -41,5 +42,13 @@ public class ApiRequestModelCabin {
 
     public void setCabin(List<Cabin> cabin) {
         this.cabin = cabin;
+    }
+
+    public int getCabinId() {
+        return cabinId;
+    }
+
+    public void setCabinId(int cabinId) {
+        this.cabinId = cabinId;
     }
 }
