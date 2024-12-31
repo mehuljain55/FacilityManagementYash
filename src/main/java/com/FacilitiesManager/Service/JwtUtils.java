@@ -26,7 +26,6 @@ public class JwtUtils {
                 .compact();
     }
 
-
     public  Claims validateToken(String token) throws JwtException {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)

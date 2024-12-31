@@ -23,8 +23,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-
+    
     private final AccessRole accessRole=AccessRole.user;
 
     @PostMapping("/login")
@@ -116,8 +115,4 @@ public class UserController {
           return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
       }
   }
-
-
-
-
 }
