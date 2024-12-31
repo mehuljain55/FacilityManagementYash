@@ -66,8 +66,7 @@ public class UserAuthorizationService {
             return  new ApiResponseModel<>(StatusResponse.not_found,null,"User Not exists");
         }
     }
-
-
+    
     public boolean validateUserToken(String userId,String token)
     {
         Optional<User> opt=userRepo.findById(userId);
