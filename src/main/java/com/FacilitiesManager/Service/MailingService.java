@@ -43,8 +43,6 @@ public class MailingService {
             helper.setCc(cc.split(","));
         }
 
-
-
         mailSender.send(message);
         System.out.println("Mail sent to: " + String.join(", ", to));
     }
@@ -187,7 +185,6 @@ public class MailingService {
 
     public String bookingCancellationMail(Bookings bookingRequest, String reason) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
-
         String startDateFormatted = dateFormatter.format(bookingRequest.getStartDate());
         String endDateFormatted = dateFormatter.format(bookingRequest.getEndDate());
 
@@ -273,7 +270,6 @@ public class MailingService {
         );
     }
 
-
     public String userRequest(User user) {
         return """
         <html>
@@ -317,7 +313,6 @@ public class MailingService {
                 user.getStatus()
         );
     }
-
 
     public String createApprovalMail(CabinRequest cabinRequest) {
         return """
@@ -469,8 +464,6 @@ public class MailingService {
         );
     }
 
-
-
     public String createRejectionMail(CabinRequest cabinRequest) {
         return """
         <html>
@@ -519,8 +512,6 @@ public class MailingService {
                 cabinRequest.getPurpose(),
                 cabinRequest.getStartDate(),
                 cabinRequest.getEndDate()
-
         );
     }
-
 }

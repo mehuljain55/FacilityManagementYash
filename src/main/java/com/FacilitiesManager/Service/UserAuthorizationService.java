@@ -27,8 +27,6 @@ public class UserAuthorizationService {
     @Autowired
     private  MailingService mailingService;
 
-
-
     public ApiResponseModel<UserLoginModel> registerUser(User userRequest) throws MessagingException {
         Optional<User> opt=userRepo.findById(userRequest.getEmailId());
         if(opt.isPresent())
@@ -42,11 +40,9 @@ public class UserAuthorizationService {
             String content=mailingService.userRequest(user);
             List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager, user.getOfficeId());
             mailingService.sendMail(managers,"User account approval notification",content, user.getEmailId());
-
             return  new ApiResponseModel<>(StatusResponse.success,null,"User added");
         }
     }
-
 
     public ApiResponseModel<UserLoginModel> validateUserLogin(String userId,String password)
     {
@@ -98,7 +94,6 @@ public class UserAuthorizationService {
         }
     }
 
-
     private String hashPassword(String rawPassword) {
         return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
     }
@@ -106,8 +101,6 @@ public class UserAuthorizationService {
     public boolean verifyPassword(String rawPassword, String hashedPassword) {
         return BCrypt.checkpw(rawPassword, hashedPassword);
     }
-
-
 }
 
 

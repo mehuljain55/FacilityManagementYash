@@ -55,7 +55,6 @@ public class ExportController {
             row.createCell(11).setCellValue(request.getStatus().toString());
         }
 
-
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -68,7 +67,6 @@ public class ExportController {
 
         HttpHeaders headersResponse = new HttpHeaders();
         headersResponse.add("Content-Disposition", "attachment; filename=cabin_requests.xlsx");
-
         return new ResponseEntity<>(excelData, headersResponse, HttpStatus.OK);
     }
 
@@ -84,7 +82,6 @@ public class ExportController {
                 Cell cell = header.createCell(i);
                 cell.setCellValue(columns[i]);
             }
-
             int rowIdx = 1;
             for (Bookings booking : bookings) {
                 Row row = sheet.createRow(rowIdx++);

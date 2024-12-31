@@ -22,7 +22,7 @@ public class BookingModel {
         private Date date;
         private LocalTime validFrom;
         private LocalTime validTill;
-          @Enumerated(EnumType.STRING)
+        @Enumerated(EnumType.STRING)
         private BookingStatus status;
 
     public BookingModel(int sno, int bookingId, int cabinId, String userId, String officeId, String purpose, Date date, LocalTime validFrom, LocalTime validTill) {

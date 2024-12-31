@@ -26,7 +26,6 @@ public class BookingReminderService {
         System.out.println(bookings.size());
         for(Bookings booking:bookings)
         {
-            System.out.println("Bookings: "+booking);
             String content="This is a reminder that your cabin booking, identified by Booking ID:" +booking.getBookingId()+" Cabin ID:"+booking.getCabinId()+" and Cabin Name "+booking.getCabinName()+" will conclude in exactly 15 minutes. " +
                     "We kindly request you to finalize any activities before the booking period ends. " +
                     "Should you require an extension or have any questions, please feel free to contact the administration team.";

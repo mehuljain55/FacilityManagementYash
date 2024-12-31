@@ -1,8 +1,10 @@
 package com.FacilitiesManager.Controller;
 
 import com.FacilitiesManager.Entity.Cabin;
+import com.FacilitiesManager.Entity.Enums.AccessRole;
 import com.FacilitiesManager.Entity.Enums.StatusResponse;
 import com.FacilitiesManager.Entity.Model.ApiRequestModel;
+import com.FacilitiesManager.Entity.Model.ApiRequestModelCabin;
 import com.FacilitiesManager.Entity.Model.ApiRequestModelCabinRequest;
 import com.FacilitiesManager.Entity.Model.ApiResponseModel;
 import com.FacilitiesManager.Service.CabinRequestService;
@@ -24,6 +26,9 @@ public class CabinController {
 
     @Autowired
     private UserAuthorizationService userAuthorizationService;
+
+
+    private final AccessRole accessRole=AccessRole.manager;
 
 
     @PostMapping ("/findAvailableCabins")
@@ -49,9 +54,16 @@ public class CabinController {
                 .body(excelBytes);
     }
 
-
-
-
-
-
+    @PostMapping("/deleteCabin")
+    public ApiResponseModel deleteCabin(@RequestBody ApiRequestModelCabin apiRequestModelCabin)
+    {
+        boolean validateAccess=userAuthorizationService.validateUserAccess(apiRequestModelCabin.getUser(),apiRequestModelCabin.getToken(),accessRole);
+        if(validateAccess)
+        {
+            ApiResponseModel apiResponseModel=cabinRequestService.deleteCabin(apiRequestModelCabin.getCabinId());
+            return apiResponseModel;
+        }else {
+            return new ApiResponseModel(StatusResponse.unauthorized, null, "Unauthorized Access");
+        }
+    }
 }

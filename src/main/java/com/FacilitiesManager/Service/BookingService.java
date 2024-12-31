@@ -11,11 +11,8 @@ import com.FacilitiesManager.Entity.Model.CabinAvaliableModel;
 import com.FacilitiesManager.Entity.Model.UserCabinModifyModel;
 import com.FacilitiesManager.Repository.*;
 import jakarta.mail.MessagingException;
-import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -42,8 +39,6 @@ public class BookingService {
     @Autowired
     private  MailingService mailingService;
 
-
-
     public ApiResponseModel viewBooking(User userRequest)
     {
         Optional<User> opt=userRepo.findById(userRequest.getEmailId());
@@ -54,16 +49,11 @@ public class BookingService {
             {
                    user.setOfficeId(userRequest.getOfficeId());
             }
-
             List<Bookings> bookings=bookingRepository.findBookingsByOfficeId(user.getOfficeId());
             return new ApiResponseModel<>(StatusResponse.success,bookings,"Booking List");
-
         }else{
             return new ApiResponseModel<>(StatusResponse.unauthorized,null,"Unauthorized request");
-
         }
-
-
     }
 
     public ApiResponseModel createBooking(CabinRequest cabinRequestApproval)
@@ -78,11 +68,9 @@ public class BookingService {
             {
                 avabality_status=checkCabinAvabalitySingleDay(cabinRequest);
                 cabinRequest.setEndDate(cabinRequest.getStartDate());
-            }
-            else{
+            } else{
                 avabality_status=checkCabinAvailabilityMultipleDay(cabinRequest);
             }
-
             if(avabality_status)
             {
                 Bookings bookings=new Bookings();
@@ -130,7 +118,6 @@ public class BookingService {
                         cabinRequestModel.setStatus(BookingStatus.approved);
                         cabinRequestModelRepository.save(cabinRequestModel);
                     }
-
                     CabinRequest cabinRequestUser= cabinRequestRepository.save(cabinRequest);
                     String content=mailingService.createApprovalMail(cabinRequestUser);
                     List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager,cabinRequestUser.getOfficeId());
@@ -139,11 +126,9 @@ public class BookingService {
                 }else {
                     return  new ApiResponseModel<>(StatusResponse.not_found,null,"Cabin not found");
                 }
-
             }else {
                 return  new ApiResponseModel<>(StatusResponse.not_available,null,"Cabin already booked");
             }
-
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -162,26 +147,18 @@ public class BookingService {
         if(bookings.isEmpty())
         {
             return new ApiResponseModel(StatusResponse.not_found, null, "User Booking not found");
-        }
-        else {
-
-            for (BookingModel model:bookings)
-            {
-                System.out.println(model);
-            }
+        }else{
             return new ApiResponseModel(StatusResponse.success, bookings, "User Booking");
         }
     }
 
-
-
     public ApiResponseModel cancelBookingRequest(CabinRequest cabinRequestApproval) throws MessagingException {
         Optional<CabinRequest> opt=cabinRequestRepository.findById(cabinRequestApproval.getRequestId());
-        CabinRequest cabinRequest=opt.get();
-        List<CabinRequestModel> cabinRequestModels=cabinRequestModelRepository.findCabinRequestByCabinRequestId(cabinRequest.getRequestId());
 
         if(opt.isPresent())
         {
+            CabinRequest cabinRequest=opt.get();
+            List<CabinRequestModel> cabinRequestModels=cabinRequestModelRepository.findCabinRequestByCabinRequestId(cabinRequest.getRequestId());
             cabinRequest.setStatus(BookingStatus.rejected);
             for(CabinRequestModel cabinRequestModel:cabinRequestModels)
             {
@@ -192,14 +169,9 @@ public class BookingService {
             String content=mailingService.createRejectionMail(cabinRequestUser);
             List<String> managers=userRepo.findEmailsByRoleAndOfficeId(AccessRole.manager,cabinRequestUser.getOfficeId());
             mailingService.sendMail(managers,"Cabin request rejection notification",content,cabinRequestUser.getUserId());
-
-
             return  new ApiResponseModel<>(StatusResponse.success,null,"Booking request cancelled");
-
-        }
-        else {
+        }else {
             return  new ApiResponseModel<>(StatusResponse.not_found,null,"Booking request not found");
-
         }
 
     }
@@ -305,7 +277,6 @@ public class BookingService {
         return new ApiResponseModel<>(StatusResponse.success,null,"Booking updated");
     }
 
-
     public  int createCabinModelRequest(CabinRequest cabinRequest,Cabin cabin)
     {
         cabinRequest.setRequestDate(new Date());
@@ -332,9 +303,6 @@ public class BookingService {
    return cabinRequestUser.getRequestId();
     }
 
-
-
-
     public boolean checkCabinAvabalitySingleDay(CabinRequest cabinRequest) {
         List<BookingModel> bookings = bookingModelRepository.findBookingsByCabinIdSingleDayBetweenTimes(
                 cabinRequest.getCabinId(),
@@ -352,18 +320,8 @@ public class BookingService {
                 cabinRequest.getEndDate(),
                 cabinRequest.getCabinId(),
                 BookingStatus.approved);
-        System.out.println("Booking multiple day");
-        for(BookingModel bookingModel:bookings)
-        {
-            System.out.println(bookingModel);
-        }
-
         return bookings == null || bookings.isEmpty();
     }
-
-
-
-
 
     public boolean checkCabinRequestSingleDay(CabinRequest cabinRequest) {
         System.out.println("Cabin Request"+cabinRequest);
@@ -382,14 +340,8 @@ public class BookingService {
                 cabinRequest.getEndDate(),
                 cabinRequest.getCabinId(),
                 BookingStatus.hold);
-
         return bookings == null || bookings.size()<=1;
     }
-
-
-
-
-
 
     public static List<Date> getDatesBetween(Date startDate, Date endDate)  {
         List<Date> dates = new ArrayList<>();
@@ -402,6 +354,4 @@ public class BookingService {
         }
         return dates;
     }
-
-
 }
