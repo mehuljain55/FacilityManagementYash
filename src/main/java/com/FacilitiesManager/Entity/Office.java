@@ -1,8 +1,7 @@
 package com.FacilitiesManager.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.FacilitiesManager.Entity.Enums.OfficeStatus;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="officeId")
@@ -11,6 +10,8 @@ public class Office {
     private String officeId;
     private String officeName;
     private String address;
+    @Enumerated(EnumType.STRING)
+    private OfficeStatus status;
 
     public Office() {
     }
@@ -43,5 +44,13 @@ public class Office {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public OfficeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OfficeStatus status) {
+        this.status = status;
     }
 }

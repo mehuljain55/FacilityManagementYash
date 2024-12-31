@@ -166,7 +166,7 @@ public class UserService {
         }
     }
 
-    public ApiResponseModel findAllOffice()
+    public ApiResponseModel<List<String>> findAllOffice()
     {
         List<Office> officeList=officeRepository.findAll();
         List<String> offices=new ArrayList<>();
@@ -178,7 +178,7 @@ public class UserService {
         return new ApiResponseModel(StatusResponse.success,offices,"OfficeList");
     }
 
-    public ApiResponseModel getAllOffice()
+    public ApiResponseModel<List<Office>> getAllOffice()
     {
         List<Office> officeList=officeRepository.findAll();
 
